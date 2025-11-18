@@ -1,174 +1,302 @@
-# Design Guidelines - Sistema Integrado IPE
+# Design Guidelines - Sistema Integrado IPE (Igreja Presbiteriana Emaús)
 
-## Design Approach: Administrative Design System
+## Identidade Visual IPE
 
-**Selected Framework:** Material Design for Web Applications adapted for ecclesiastical management
-**Rationale:** Utility-focused productivity tool requiring clear information hierarchy, multi-panel navigation, and enterprise-grade data management with accessibility for varied user technical literacy.
+**Paleta de Cores Oficial:**
+- **Laranja IPE**: `#F39C12` - Cor de destaque e acentuação (presente no logo)
+- **Azul Petróleo IPE**: `#1E5F74` - Cor primária institucional (cor "EMAÚS" no logo)
+- **Branco**: Para contraste, clareza e fundos
+- **Cinza Neutro**: Para textos secundários e bordas
 
----
-
-## Typography System
-
-**Font Families:**
-- Primary: Inter (headings, UI elements, navigation)
-- Secondary: System UI (body text, data tables, forms)
-
-**Type Scale:**
-- Page Titles: text-3xl font-bold (36px)
-- Section Headers: text-xl font-semibold (24px)
-- Card Titles: text-lg font-medium (20px)
-- Body Text: text-base (16px)
-- Helper Text: text-sm (14px)
-- Table Data: text-sm (14px)
+**Logo IPE:**
+- Posicionado no topo da sidebar em todos os painéis
+- Largura máxima de 200px
+- Fundo transparente para adaptação a temas claros/escuros
 
 ---
 
-## Layout & Spacing System
+## Abordagem de Design
 
-**Spacing Primitives:** Tailwind units of 4, 6, 8, 12, 16
-- Component padding: p-6
-- Section spacing: py-8, py-12
-- Card spacing: p-6
-- Form field gaps: gap-4, gap-6
-- Page margins: px-8
+**Framework Escolhido:** Design System Administrativo Eclesiástico  
+**Filosofia:** Interface profissional e acessível para gestão pastoral, financeira, diaconal e compliance LGPD. O design deve transmitir seriedade, confiabilidade e respeito, adequado ao contexto religioso institucional.
 
-**Grid System:**
-- Dashboard metrics: 3-column grid (grid-cols-3)
-- Forms: 2-column layout (grid-cols-2) for desktop, single column mobile
-- Data tables: Full width with horizontal scroll
-- Cards: Responsive grid (grid-cols-1 md:grid-cols-2 lg:grid-cols-3)
+**Princípios Fundamentais:**
+- **Separação Total de Painéis**: Cada perfil (Pastor, Tesoureiro, Diácono, LGPD) vê apenas suas funções
+- **Hierarquia Clara**: Informação organizada por importância e contexto pastoral/administrativo
+- **Acessibilidade**: Interface utilizável por pessoas de diferentes níveis de alfabetização digital
+- **Conformidade LGPD**: Transparência no tratamento de dados pessoais
 
 ---
 
-## Application Structure
+## Sistema Tipográfico
 
-**Master Layout:**
+**Famílias de Fonte:**
+- **Principal**: Inter (cabeçalhos, navegação, UI)
+- **Secundária**: System UI (corpo de texto, tabelas, formulários)
+- **Monospace**: Para códigos, números de documentos
+
+**Escala Tipográfica:**
+- **Títulos de Página**: text-3xl font-bold (36px) - Azul Petróleo IPE
+- **Cabeçalhos de Seção**: text-xl font-semibold (24px)
+- **Títulos de Card**: text-lg font-medium (20px)
+- **Texto Corpo**: text-base (16px)
+- **Texto Auxiliar**: text-sm (14px)
+- **Texto de Tabelas**: text-sm (14px)
+- **Labels de Formulário**: text-sm font-medium
+
+---
+
+## Sistema de Espaçamento
+
+**Primitivas de Espaçamento:** Unidades Tailwind de 4, 6, 8, 12, 16
+- **Padding de Componentes**: p-6
+- **Espaçamento de Seções**: py-8, py-12
+- **Espaçamento de Cards**: p-6
+- **Gap de Campos de Formulário**: gap-4, gap-6
+- **Margens de Página**: px-8
+
+**Sistema de Grid:**
+- **Métricas Dashboard**: grid-cols-3 (desktop), grid-cols-1 (mobile)
+- **Formulários**: grid-cols-2 (desktop), grid-cols-1 (mobile)
+- **Tabelas**: Largura total com scroll horizontal se necessário
+- **Cards**: grid-cols-1 md:grid-cols-2 lg:grid-cols-3
+
+---
+
+## Estrutura da Aplicação
+
+**Layout Mestre:**
 ```
-[Fixed Sidebar - 280px] [Main Content Area - flex-1]
+[Sidebar Fixa - 280px] [Área de Conteúdo Principal - flex-1]
 ```
 
-**Sidebar Components:**
-- IPE Logo (top, 200px width, centered)
-- Navigation menu (vertical list)
-- Role indicator badge
-- User profile section (bottom)
-- Logout button
+**Componentes da Sidebar:**
+- Logo IPE (topo, 200px largura, centralizado)
+- Badge de identificação do painel (Pastor/Tesoureiro/Diácono/LGPD)
+- Menu de navegação vertical com ícones
+- Informações do usuário (rodapé)
+- Botão de logout
 
-**Main Content Structure:**
-- Page header with breadcrumb
-- Action bar (search, filters, primary CTA)
-- Content area (tables, cards, forms)
-- Pagination/load more
+**Estrutura do Conteúdo Principal:**
+- Cabeçalho da página com breadcrumb
+- Barra de ações (busca, filtros, botão primário de ação)
+- Área de conteúdo (tabelas, cards, formulários)
+- Paginação/carregamento progressivo
 
 ---
 
-## Core Components
+## Componentes Principais
 
-### Navigation
-- **Sidebar Navigation:** Fixed left sidebar, 280px width, vertical menu items with icons (Heroicons)
-- **Active State:** Filled background, medium weight text
-- **Menu Items:** py-3 px-4, rounded corners (rounded-lg), icon + text layout
-- **Role Badge:** Prominent display showing current panel (Pastor/Tesoureiro/Diácono/LGPD)
+### Navegação
+- **Sidebar**: Fixa à esquerda, 280px largura, menu vertical com ícones Lucide
+- **Estado Ativo**: Fundo preenchido com Azul Petróleo IPE, texto em branco
+- **Itens de Menu**: py-3 px-4, cantos arredondados (rounded-lg), ícone + texto
+- **Badge de Perfil**: Destaque visual mostrando o painel atual com cor correspondente
 
-### Data Tables
-- **Header:** Sticky, font-semibold, text-sm uppercase tracking-wide
-- **Rows:** Alternating subtle background, hover state, py-4 px-6
-- **Actions Column:** Right-aligned icon buttons
-- **Pagination:** Bottom center, showing "X-Y of Z results"
-- **Row Height:** py-4 for comfortable scanning
+### Tabelas de Dados
+- **Cabeçalho**: Sticky, font-semibold, text-sm uppercase tracking-wide, cor Azul Petróleo IPE
+- **Linhas**: Fundo alternado sutil, estado hover, py-4 px-6
+- **Coluna de Ações**: Alinhada à direita, botões com ícones
+- **Paginação**: Centralizada na parte inferior, mostrando "X-Y de Z resultados"
+- **Altura de Linha**: py-4 para leitura confortável
 
-### Forms
-- **Layout:** Two-column grid on desktop (grid-cols-2 gap-6), single column mobile
-- **Labels:** text-sm font-medium, mb-2
-- **Inputs:** Full width, p-3, rounded-lg border, focus ring
-- **Required Fields:** Asterisk marker in label
-- **Help Text:** text-sm below input
-- **Submit Section:** Full width, pt-8, right-aligned button group
+### Formulários
+- **Layout**: Grid de duas colunas no desktop (grid-cols-2 gap-6), coluna única no mobile
+- **Labels**: text-sm font-medium, mb-2, cor Azul Petróleo IPE
+- **Inputs**: Largura total, p-3, rounded-lg border, anel de foco Laranja IPE
+- **Campos Obrigatórios**: Marcador asterisco em vermelho no label
+- **Texto de Ajuda**: text-sm abaixo do input, cor muted
+- **Seção de Envio**: Largura total, pt-8, grupo de botões alinhado à direita
 
 ### Cards
-- **Container:** Rounded-xl, shadow-sm, p-6
-- **Header:** Flex justify-between, mb-4
-- **Content:** Organized sections with mb-6 spacing
-- **Actions:** Footer section with button group
+- **Container**: rounded-xl, shadow-sm, p-6, fundo card
+- **Cabeçalho**: Flex justify-between, mb-4
+- **Conteúdo**: Seções organizadas com espaçamento mb-6
+- **Ações**: Seção de rodapé com grupo de botões
 
-### Buttons
-- **Primary:** px-6 py-3, rounded-lg, font-medium
-- **Secondary:** Border style, same padding
-- **Icon Buttons:** p-2, rounded-lg, icon only
-- **Button Groups:** gap-3, flex layout
+### Botões
+- **Primário**: Azul Petróleo IPE, px-6 py-3, rounded-lg, font-medium, texto branco
+- **Secundário**: Estilo com borda, mesmo padding, cor Laranja IPE
+- **Destrutivo**: Vermelho, para ações de exclusão
+- **Botões com Ícone**: p-2, rounded-lg, apenas ícone
+- **Grupos de Botões**: gap-3, layout flex
 
-### Status Badges
-- **Pill Shape:** px-3 py-1, rounded-full, text-xs font-medium
-- **States:** Ativo, Inativo, Em Disciplina, Apto, Concluído
-- **Position:** Inline with relevant data
+### Badges de Status
+- **Formato Pill**: px-3 py-1, rounded-full, text-xs font-medium
+- **Estados:**
+  - Ativo: Verde
+  - Inativo: Cinza
+  - Em Disciplina: Amarelo/Laranja
+  - Apto: Azul
+  - Concluído: Verde escuro
+  - Transferido: Azul claro
+- **Posição**: Inline com dados relevantes
 
-### Dashboard Metrics
-- **Stat Cards:** Grid layout, each card showing number + label + trend
-- **Card Structure:** p-6, icon top-left, large number (text-3xl), label below
-- **Grouping:** 3-column grid (grid-cols-3 gap-6)
+### Métricas de Dashboard
+- **Cards de Estatísticas**: Layout em grid, cada card mostrando número + label + tendência
+- **Estrutura do Card**: p-6, ícone no topo-esquerda, número grande (text-3xl), label abaixo
+- **Agrupamento**: Grid de 3 colunas (grid-cols-3 gap-6) no desktop
 
-### Modal Dialogs
-- **Overlay:** Semi-transparent backdrop
-- **Container:** max-w-2xl, rounded-xl, p-8
-- **Header:** text-xl font-semibold, mb-6
-- **Footer:** Button group right-aligned, pt-6 border-t
+### Diálogos Modais
+- **Overlay**: Fundo semi-transparente
+- **Container**: max-w-2xl, rounded-xl, p-8
+- **Cabeçalho**: text-xl font-semibold, mb-6, cor Azul Petróleo IPE
+- **Rodapé**: Grupo de botões alinhado à direita, pt-6 border-t
 
-### Upload Components
-- **Drag & Drop Zone:** Border-2 dashed, p-8, rounded-lg, center-aligned
-- **File Preview:** Thumbnail + filename + remove button
-- **Required Indicator:** Clear visual marker for mandatory uploads
-
----
-
-## Panel-Specific Layouts
-
-### Painel do Pastor
-- **Dashboard:** Metric cards for Membros, Seminaristas, Catecúmenos, Visitantes
-- **Member Management:** Comprehensive form with collapsible sections (Identificação, Contatos, Situação Espiritual, etc.)
-- **Tables:** Sortable columns for all listings
-
-### Painel do Tesoureiro
-- **Financial Dashboard:** Charts (bar/line), total entries/exits, period selector
-- **Transaction Forms:** Category dropdowns, amount inputs, date pickers, file upload
-- **Reports Section:** Date range filters, export buttons (PDF/Excel/CSV)
-
-### Painel do Diácono
-- **Visitor Management:** Add visitor form, visit history timeline
-- **Boletim Builder:** Drag-drop section ordering, preview pane
-- **Patrimônio:** Inventory table with filters, add asset modal
-
-### Portal LGPD
-- **User Profile View:** Read-only data display with edit button
-- **Edit Mode:** Inline editing with save/cancel actions
-- **Data Export:** Download button for personal data package
-- **Delete Account:** Confirmation modal with warning
+### Componentes de Upload
+- **Zona Drag & Drop**: border-2 dashed, p-8, rounded-lg, centralizado, cor Laranja IPE ao hover
+- **Preview de Arquivo**: Thumbnail + nome do arquivo + botão remover
+- **Indicador Obrigatório**: Marcador visual claro para uploads obrigatórios (termos LGPD, comprovantes)
 
 ---
 
-## Responsive Behavior
+## Layouts Específicos por Painel
 
-- **Desktop (lg:):** Full sidebar, multi-column layouts
-- **Tablet (md:):** Collapsible sidebar, 2-column forms
-- **Mobile (base):** Hidden sidebar with hamburger menu, single column, stacked navigation
+### Painel do Pastor (Azul Petróleo IPE como cor primária)
+- **Dashboard**: Cards de métricas para Membros, Seminaristas, Catecúmenos, Visitantes
+- **Gestão de Membros**: Formulário abrangente com seções retráteis (Identificação, Contatos, Situação Espiritual, Cargo Eclesiástico, Status, Observações Pastorais, LGPD)
+- **Tabelas**: Colunas ordenáveis para todas as listagens com filtros por status, cargo, situação espiritual
+- **Aniversariantes**: Lista automatizada com opção de enviar para boletim
+
+### Painel do Tesoureiro (Laranja IPE como cor de destaque)
+- **Dashboard Financeiro**: Gráficos (barras/linhas), totais de entradas/saídas, seletor de período
+- **Formulários de Transação**: Dropdowns de categoria, inputs de valor, seletores de data, upload de arquivo
+- **Seção de Relatórios**: Filtros de intervalo de data, botões de exportação (PDF/Excel/CSV)
+- **Visualização de Comprovantes**: Preview de imagens/PDFs anexados às transações
+
+### Painel do Diácono (Verde como cor de destaque)
+- **Gestão de Visitantes**: Formulário de adição de visitante, linha do tempo de histórico de visitas
+- **Construtor de Boletim**: Ordenação por arrastar e soltar seções, painel de preview
+- **Boletim Dominical**: Editor completo com blocos para liturgia, EBD, avisos, aniversariantes, pedidos de oração, liderança
+- **Patrimônio**: Tabela de inventário com filtros, modal de adição de ativo
+
+### Portal LGPD (Cinza neutro com acentos Azul Petróleo IPE)
+- **Visualização de Perfil do Usuário**: Exibição de dados somente leitura com botão editar
+- **Modo de Edição**: Edição inline com ações de salvar/cancelar
+- **Exportação de Dados**: Botão de download para pacote de dados pessoais (PDF/Excel/JSON)
+- **Exclusão de Conta**: Modal de confirmação com aviso de consequências
 
 ---
 
-## Accessibility
+## Comportamento Responsivo
 
-- All form inputs with proper labels and ARIA attributes
-- Focus indicators on all interactive elements (ring-2 ring-offset-2)
-- Keyboard navigation support throughout
-- Screen reader announcements for dynamic content
-- Minimum touch target 44px for mobile
-- Sufficient contrast ratios for all text
+- **Desktop (lg:)**: Sidebar completa, layouts multi-coluna
+- **Tablet (md:)**: Sidebar retrátil, formulários de 2 colunas
+- **Mobile (base)**: Sidebar oculta com menu hambúrguer, navegação empilhada, coluna única
 
 ---
 
-## Icons
+## Acessibilidade
 
-**Library:** Heroicons (outline for navigation, solid for actions)
-**Common Icons:**
-- User management: UserIcon, UserGroupIcon
-- Financial: CurrencyDollarIcon, DocumentTextIcon
-- Actions: PencilIcon, TrashIcon, EyeIcon, DownloadIcon
-- Navigation: ChevronRightIcon, HomeIcon, ChartBarIcon
+- Todos os inputs de formulário com labels adequados e atributos ARIA
+- Indicadores de foco em todos os elementos interativos (ring-2 ring-offset-2)
+- Suporte completo para navegação por teclado
+- Anúncios de leitor de tela para conteúdo dinâmico
+- Tamanho mínimo de toque de 44px para mobile
+- Taxas de contraste suficientes para todos os textos (WCAG AA)
+
+---
+
+## Ícones
+
+**Biblioteca:** Lucide React (outline para navegação, solid para ações)
+
+**Ícones Comuns:**
+- **Gestão de Usuários**: Users, UserPlus, UserCheck
+- **Financeiro**: DollarSign, TrendingUp, Receipt, Wallet
+- **Ações**: Edit, Trash2, Eye, Download, Upload, FileText
+- **Navegação**: ChevronRight, Home, BarChart3, Calendar, Book
+- **Pastoral**: Church, BookOpen, Heart, Award
+- **LGPD**: Shield, Lock, FileCheck, AlertTriangle
+
+---
+
+## Estados Visuais
+
+### Estados de Loading
+- **Skeleton Screens**: Para tabelas e listas durante carregamento
+- **Spinners**: Para ações de formulário e botões
+- **Progress Bars**: Para uploads de arquivo
+
+### Estados Vazios
+- **Ilustração + Mensagem**: Quando não há dados para exibir
+- **Call-to-Action**: Botão para adicionar primeiro item
+- **Cores suaves**: Cinza claro para não alarmar
+
+### Estados de Erro
+- **Mensagens Claras**: Explicação do problema e solução sugerida
+- **Cor Destrutiva**: Vermelho para chamar atenção
+- **Botões de Ação**: Tentar novamente, voltar, contatar suporte
+
+### Estados de Sucesso
+- **Toast Notifications**: Verde com ícone de check
+- **Mensagens Temporárias**: Auto-dismiss após 3-5 segundos
+- **Feedback Imediato**: Confirmação visual de ações concluídas
+
+---
+
+## Padrões de Interação
+
+### Confirmação de Ações Destrutivas
+- Modal de confirmação para exclusões
+- Texto claro sobre consequências
+- Botão destrutivo (vermelho) separado do botão cancelar
+
+### Upload de Arquivos
+- Drag & drop zone com feedback visual
+- Preview de arquivo após seleção
+- Barra de progresso durante upload
+- Validação de tipo e tamanho de arquivo
+
+### Navegação entre Seções
+- Breadcrumbs para contexto de localização
+- Transições suaves entre páginas
+- Preservação de estado de filtros e buscas
+
+### Edição Inline
+- Duplo clique para ativar modo de edição
+- Enter para salvar, Esc para cancelar
+- Indicadores visuais claros de modo de edição
+
+---
+
+## Temas (Claro/Escuro)
+
+**Modo Claro (Padrão):**
+- Fundo: Branco (#FFFFFF)
+- Texto: Azul Petróleo IPE escuro (#0D2F3F)
+- Cards: Cinza muito claro (#F8F9FA)
+- Bordas: Cinza claro (#E9ECEF)
+
+**Modo Escuro:**
+- Fundo: Azul Petróleo IPE muito escuro (#0A1F2A)
+- Texto: Branco (#FFFFFF)
+- Cards: Azul Petróleo IPE escuro (#1E5F74)
+- Bordas: Azul Petróleo IPE médio (#2C7A94)
+- Acentos: Laranja IPE mantém-se (#F39C12)
+
+---
+
+## Considerações Especiais para Contexto Eclesiástico
+
+### Linguagem e Terminologia
+- Usar terminologia da IPB (Igreja Presbiteriana do Brasil)
+- Respeito ao vocabulário pastoral e teológico
+- Clareza para usuários não técnicos
+
+### Privacidade e Sigilo Pastoral
+- Observações pastorais sempre ocultas para outros perfis
+- Indicadores visuais claros de informação confidencial
+- Avisos sobre dados sensíveis (disciplina, aconselhamento)
+
+### Compliance LGPD
+- Transparência sobre coleta e uso de dados
+- Facilidade de acesso, correção e exclusão de dados pessoais
+- Rastreabilidade de consentimentos e revogações
+- Logs de auditoria para todas as ações com dados pessoais
+
+### Impressão de Relatórios
+- Layouts otimizados para impressão
+- Cabeçalho IPE em relatórios impressos
+- Formatação adequada de boletins para distribuição física
+- Opções de exportação PDF com logo e identidade visual IPE
