@@ -2,22 +2,25 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 import logoUrl from "@assets/Logo IPE Completo sem fundo_1763476158974.png";
 
 const loginSchema = z.object({
-  username: z.string().min(3, "Usuário deve ter pelo menos 3 caracteres"),
-  password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
+  username: z.string().min(1, "Usuário é obrigatório"),
+  password: z.string().min(1, "Senha é obrigatória"),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
+  const [, setLocation] = useLocation();
   const { toast } = useToast();
 
   const form = useForm<LoginFormValues>({
@@ -31,16 +34,42 @@ export default function Login() {
   const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
     try {
-      // TODO: Implementar lógica de autenticação
-      console.log("Login data:", data);
+      const response = await apiRequest("POST", "/api/auth/login", data);
+      const result = await response.json();
+
+      const { user, sessionId } = result;
+      
+      // Salvar sessão no localStorage
+      localStorage.setItem("sessionId", sessionId);
+      localStorage.setItem("user", JSON.stringify(user));
+
       toast({
         title: "Login realizado com sucesso!",
-        description: "Redirecionando para o painel...",
+        description: `Bem-vindo, ${user.username}!`,
       });
-    } catch (error) {
+
+      // Redirecionar baseado no role
+      switch (user.role) {
+        case "pastor":
+          setLocation("/pastor");
+          break;
+        case "treasurer":
+          setLocation("/treasurer");
+          break;
+        case "deacon":
+          setLocation("/deacon");
+          break;
+        case "member":
+        case "visitor":
+          setLocation("/lgpd");
+          break;
+        default:
+          setLocation("/");
+      }
+    } catch (error: any) {
       toast({
         title: "Erro ao fazer login",
-        description: "Usuário ou senha inválidos",
+        description: error.message || "Usuário ou senha inválidos",
         variant: "destructive",
       });
     } finally {

@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { authenticateUser, createSession, getSession, deleteSession } from "./auth";
 import { z } from "zod";
 import { 
   insertMemberSchema, 
@@ -28,29 +29,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { username, password } = req.body;
       
-      // TODO: Implementar autenticação real com bcrypt e JWT
-      // Por enquanto, retorna mock
       if (!username || !password) {
         return res.status(400).json({ error: "Username and password required" });
       }
       
-      const user = await storage.getUserByUsername(username);
+      const user = await authenticateUser(username, password);
+      
       if (!user) {
         return res.status(401).json({ error: "Invalid credentials" });
       }
       
-      // TODO: Verificar password com bcrypt
-      // TODO: Gerar JWT token
+      const sessionId = createSession(user);
       
       res.json({ 
         user: {
           id: user.id,
           username: user.username,
-          role: user.role
+          role: user.role,
+          memberId: user.memberId,
+          visitorId: user.visitorId,
         },
-        token: "mock-jwt-token" // TODO: JWT real
+        sessionId,
       });
     } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.post("/api/auth/logout", async (req, res) => {
+    try {
+      const { sessionId } = req.body;
+      
+      if (sessionId) {
+        deleteSession(sessionId);
+      }
+      
+      res.json({ message: "Logged out successfully" });
+    } catch (error) {
+      console.error("Logout error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.get("/api/auth/session", async (req, res) => {
+    try {
+      const sessionId = req.headers.authorization?.replace("Bearer ", "");
+      
+      if (!sessionId) {
+        return res.status(401).json({ error: "No session" });
+      }
+      
+      const session = getSession(sessionId);
+      
+      if (!session) {
+        return res.status(401).json({ error: "Invalid session" });
+      }
+      
+      res.json({ session });
+    } catch (error) {
+      console.error("Session error:", error);
       res.status(500).json({ error: "Internal server error" });
     }
   });

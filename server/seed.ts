@@ -1,5 +1,6 @@
 import { db } from "./db";
 import { users, members } from "@shared/schema";
+import { hashPassword } from "./auth";
 
 async function seed() {
   console.log("🌱 Iniciando seed do banco de dados...");
@@ -69,22 +70,24 @@ async function seed() {
     // Criar usuários vinculados aos membros
     console.log("👥 Criando usuários de teste...");
     
+    const hashedPassword = await hashPassword("senha123");
+    
     await db.insert(users).values([
       {
         username: "pastor",
-        password: "senha123", // TODO: Implementar bcrypt
+        password: hashedPassword,
         role: "pastor",
         memberId: pastor.id,
       },
       {
         username: "tesoureiro",
-        password: "senha123", // TODO: Implementar bcrypt
+        password: hashedPassword,
         role: "treasurer",
         memberId: tesoureiro.id,
       },
       {
         username: "diacono",
-        password: "senha123", // TODO: Implementar bcrypt
+        password: hashedPassword,
         role: "deacon",
         memberId: diacono.id,
       },
