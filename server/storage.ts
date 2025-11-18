@@ -152,7 +152,7 @@ export class DBStorage implements IStorage {
 
   async deleteMember(id: string): Promise<boolean> {
     const result = await db.delete(members).where(eq(members.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Seminarians
@@ -180,7 +180,7 @@ export class DBStorage implements IStorage {
 
   async deleteSeminarian(id: string): Promise<boolean> {
     const result = await db.delete(seminarians).where(eq(seminarians.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Catechumens
@@ -208,7 +208,7 @@ export class DBStorage implements IStorage {
 
   async deleteCatechumen(id: string): Promise<boolean> {
     const result = await db.delete(catechumens).where(eq(catechumens.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Visitors
@@ -236,7 +236,7 @@ export class DBStorage implements IStorage {
 
   async deleteVisitor(id: string): Promise<boolean> {
     const result = await db.delete(visitors).where(eq(visitors.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Tithes
@@ -256,7 +256,7 @@ export class DBStorage implements IStorage {
 
   async deleteTithe(id: string): Promise<boolean> {
     const result = await db.delete(tithes).where(eq(tithes.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Offerings
@@ -276,7 +276,7 @@ export class DBStorage implements IStorage {
 
   async deleteOffering(id: string): Promise<boolean> {
     const result = await db.delete(offerings).where(eq(offerings.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Bookstore Sales
@@ -296,7 +296,7 @@ export class DBStorage implements IStorage {
 
   async deleteBookstoreSale(id: string): Promise<boolean> {
     const result = await db.delete(bookstoreSales).where(eq(bookstoreSales.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Loans
@@ -331,7 +331,7 @@ export class DBStorage implements IStorage {
 
   async deleteExpense(id: string): Promise<boolean> {
     const result = await db.delete(expenses).where(eq(expenses.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Diaconal Help
@@ -374,7 +374,7 @@ export class DBStorage implements IStorage {
 
   async deleteBulletin(id: string): Promise<boolean> {
     const result = await db.delete(bulletins).where(eq(bulletins.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // LGPD Consents
