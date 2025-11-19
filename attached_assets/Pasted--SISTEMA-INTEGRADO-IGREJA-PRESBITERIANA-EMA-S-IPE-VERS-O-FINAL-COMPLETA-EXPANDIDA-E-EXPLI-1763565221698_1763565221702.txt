@@ -1,0 +1,1183 @@
+🏛️ SISTEMA INTEGRADO – IGREJA PRESBITERIANA EMAÚS – IPE
+
+VERSÃO FINAL — COMPLETA, EXPANDIDA E EXPLICADA EM DETALHES
+
+O sistema da IPE é dividido em quatro pilares, cada um completamente independente, com seu próprio painel e suas próprias funções:
+
+1. 🔵 Painel do Pastor
+
+
+2. 🟣 Painel do Tesoureiro
+
+
+3. 🟢 Painel do Diácono
+
+
+4. 🟤 Portal LGPD (autogerenciado por membros e visitantes)
+
+
+
+Cada painel foi projetado seguindo:
+
+competências bíblicas e administrativas da IPB
+
+princípios de governo eclesiástico
+
+exigências legais da LGPD
+
+fluidez administrativa
+
+segurança dos dados
+
+
+Nada que é do Pastor aparece no painel do Tesoureiro ou Diácono.
+Nada do Financeiro aparece no Pastoral.
+Nada do Boletim aparece no Tesoureiro.
+E assim por diante.
+
+Cada usuário vê somente o que lhe pertence.
+
+
+---
+
+🎯 FUNCIONAMENTO GERAL DO SISTEMA
+
+🔐 1. Controle de acesso
+
+Cada cargo possui:
+
+login próprio
+
+painel exclusivo
+
+funções limitadas por permissão
+
+impossibilidade de enxergar áreas de outros cargos
+
+
+Isso garante:
+
+segurança
+
+sigilo
+
+compliance com LGPD
+
+clareza operacional
+
+
+
+---
+
+🔵 PAINEL DO PASTOR – DETALHADO
+
+O Pastor é responsável pela estrutura espiritual e administrativa de membros, seminaristas e catecúmenos.
+Ele não lida com dinheiro e não modifica funções diaconais.
+
+O painel contém somente funções pastorais.
+
+
+---
+
+🔷 1. Membros – totalmente detalhado
+
+Essa é a base central do Painel Pastoral.
+
+O cadastro de Membro é composto de vários grupos de informações:
+
+🔹 IDENTIFICAÇÃO
+
+Nome completo
+
+Sexo (opcional)
+
+Data de nascimento
+
+Estado civil
+
+
+🔹 CONTATOS
+
+Telefone principal
+
+Telefone alternativo
+
+Email
+
+Endereço completo (rua, número, complemento, bairro, CEP)
+
+
+🔹 SITUAÇÃO ESPIRITUAL
+
+Comungante
+
+Não comungante
+Essas informações interferem em:
+
+admissões
+
+estatísticas da igreja
+
+boletim
+
+
+🔹 CARGO ECLESIÁSTICO
+
+O cargo determina o papel do membro dentro da organização:
+
+Membro
+
+Presbítero
+
+Diácono
+
+Pastor
+
+Seminarista (novo)
+
+
+Categorias permitem:
+
+organização da liderança
+
+geração do boletim
+
+listas de contatos
+
+estatísticas da IPB
+
+identificação de responsáveis por departamentos (SAF, UPH etc.)
+
+
+🔹 STATUS ADMINISTRATIVO
+
+Ativo
+
+Inativo
+
+Transferido
+
+Em disciplina
+
+
+Esse status define:
+
+se aparece em listas de aniversariantes
+
+se aparece em listas da congregação
+
+se está visível no Emaús Vota (no futuro)
+
+se pode receber ajuda, constar no boletim, etc.
+
+
+🔹 INFORMAÇÕES DE MATRÍCULA
+
+Data de admissão
+
+Data de casamento (usado para aniversários de casamento)
+
+
+🔹 OBSERVAÇÕES PASTORAIS
+
+Espaço restrito ao Pastor, oculto para todos os outros perfis.
+Permite registrar:
+
+histórico espiritual
+
+acompanhamento pastoral
+
+visitas
+
+aconselhamentos
+
+notas importantes
+
+
+🔹 LGPD – DOCUMENTOS
+
+O membro obrigatoriamente precisa ter:
+
+Termo de consentimento / autorização de uso de dados (PDF, JPG ou PNG)
+O upload é obrigatório.
+
+
+
+---
+
+🔷 2. Seminaristas – painel completo
+
+O cadastro é similar ao dos membros, mas com características próprias:
+
+Nome
+
+Email
+
+Telefone
+
+Instituição teológica (ex.: CPAJ, FTSA etc.)
+
+Ano de ingresso
+
+Status: ativo, em estágio, concluído
+
+Observações
+
+
+O Seminarista aparece no Boletim automaticamente.
+
+
+---
+
+🔷 3. Catecúmenos – com as três etapas oficiais
+
+A classe de catecúmenos segue o padrão da IPB.
+
+As três etapas são:
+
+1. EM ANDAMENTO
+
+frequência ao curso
+
+progresso
+
+
+
+2. APTO
+
+completou todo conteúdo
+
+está pronto para profissão de fé
+
+
+
+3. CONCLUÍDO
+
+foi batizado / professou fé
+
+automaticamente vira MEMBRO
+
+
+
+
+🔹 PROFESSOR RESPONSÁVEL
+
+Sempre será o Pastor.
+O sistema não permite alterar esse campo.
+
+🔹 CAMPOS DO CATECÚMENO
+
+Nome (pode ser visitante ou membro não comungante)
+
+Data de início
+
+Previsão da profissão de fé
+
+Etapa atual
+
+Observações
+
+
+
+---
+
+🔷 4. Visitantes – SOMENTE LEITURA
+
+Pastor pode:
+
+ver lista de visitantes
+
+ver histórico de visitas
+
+ver quem convidou
+
+ver igreja de origem
+Mas NÃO pode editar nada.
+
+
+
+---
+
+🔷 5. Aniversariantes – totalmente automatizado
+
+O sistema identifica automaticamente:
+
+Aniversariantes da semana (somente membros)
+
+Aniversários de casamento (somente membros casados)
+
+
+Pastor pode:
+
+enviar os aniversariantes para o boletim
+
+exportar relatório
+
+mudar alguém manualmente (ex.: excluir caso especial)
+
+
+
+---
+
+🔷 6. Relatórios Pastorais
+
+Inclui:
+
+membros por cargo
+
+membros por status
+
+comungantes / não comungantes
+
+seminaristas
+
+catecúmenos por etapa
+
+visitantes por frequência (somente leitura)
+
+aniversariantes
+
+
+Exportação:
+
+PDF
+
+Excel
+
+CSV
+
+
+
+---
+
+🔷 7. Perfil do Pastor
+
+alterar senha
+
+alterar email
+
+foto
+
+dados pessoais
+
+contatos
+
+
+
+---
+
+🟣 PAINEL DO TESOUREIRO – EXTREMAMENTE DETALHADO
+
+O Tesoureiro é responsável pela administração financeira completa da IPE.
+
+Ele possui acesso a:
+
+todas as entradas
+
+todas as saídas
+
+relatórios completos
+
+dashboard
+
+comprovantes
+
+histórico de movimentações
+
+
+Mas NÃO tem acesso a:
+
+membros
+
+catecúmenos
+
+visitantes
+
+boletim dominical
+
+
+
+---
+
+💰 1. ENTRADAS
+
+🔹 DÍZIMOS (comprovante opcional)
+
+Campos:
+
+Membro
+
+Valor
+
+Data
+
+Forma de pagamento
+
+Observações
+
+Upload opcional
+
+
+Dízimo sempre vincula a um membro.
+
+
+---
+
+🔹 OFERTAS (comprovante opcional)
+
+SOMENTE 4 tipos (definitivos):
+
+1. Social
+
+
+2. Geral
+
+
+3. Obra
+
+
+4. Missões
+
+
+
+Campos:
+
+Tipo
+
+Valor
+
+Data
+
+Observações
+
+Upload opcional
+
+
+
+---
+
+🔹 LIVRARIA (comprovante obrigatório)
+
+Venda deve ser vinculada a um comprador:
+
+membro
+
+ou visitante
+
+
+Campos:
+
+Produto/livro
+
+Quantidade
+
+Valor total
+
+Forma de pagamento
+
+Upload obrigatório
+
+
+
+---
+
+🔹 EMPRÉSTIMOS RECEBIDOS (comprovante opcional)
+
+Campos:
+
+Credor
+
+Valor total
+
+Número de parcelas
+
+Valor por parcela
+
+Data da primeira parcela
+
+Upload opcional
+
+
+Sistema gera automaticamente todas as parcelas de saída.
+
+
+---
+
+📤 2. SAÍDAS (comprovante obrigatório)
+
+Inclui:
+
+Água
+
+Luz
+
+Internet
+
+Sistema de alarme
+
+Zeladoria
+
+Salário pastor
+
+Oferta à missionários
+
+Ajuda diaconal
+
+Manutenção
+
+Insumos
+
+Parcelas de empréstimos
+
+
+Cada saída exige:
+
+descrição
+
+valor
+
+data
+
+comprovante
+
+
+
+---
+
+📈 3. DASHBOARD FINANCEIRO – SUPER DETALHADO
+
+O dashboard apresenta:
+
+Saldo atualizado
+
+Entradas do mês
+
+Saídas do mês
+
+Dízimos totais
+
+Ofertas por tipo (gráfico)
+
+Vendas da livraria
+
+Gasto com ajuda diaconal
+
+Parcelas de empréstimo vencidas ou proximas
+
+Resultado do mês (superávit/déficit)
+
+
+É totalmente visual.
+
+
+---
+
+📊 4. RELATÓRIOS FINANCEIROS – COMPLETOS
+
+Relatórios incluem:
+
+🔹 Ofertas por tipo
+
+(só 4 tipos, nunca muda)
+
+🔹 Dízimos por membro
+
+Com:
+
+valores acumulados
+
+média por mês
+
+grafico mensal
+
+
+🔹 Saídas por categoria
+
+Ex.:
+
+manutenção
+
+insumos
+
+ajuda diaconal
+
+etc.
+
+
+🔹 Livraria por membro ou visitante
+
+🔹 Empréstimos
+
+Parcelas pagas, vencidas e futuras.
+
+🔹 Relatório anual consolidado
+
+Exportação:
+
+PDF
+
+Excel
+
+CSV
+
+
+
+---
+
+🟢 PAINEL DO DIÁCONO – EXTREMAMENTE DETALHADO
+
+O Diácono possui três grandes responsabilidades no sistema:
+
+1. Cadastro de visitantes
+
+
+2. Ajuda diaconal
+
+
+3. Boletim dominical
+
+
+
+Ele não vê nada de dinheiro (exceto relatórios básicos).
+Ele não vê membros (exceto listagem para selecionar quem convidou um visitante).
+
+
+---
+
+👥 1. Visitantes – cadastro exclusivo do diácono
+
+Campos:
+
+Nome completo
+
+Telefone
+
+Email
+
+Endereço
+
+É de alguma igreja? (sim/não)
+
+Se sim, qual?
+
+Quem convidou (membro)
+
+Primeira visita
+
+Observações
+
+Upload da autorização LGPD (obrigatório)
+
+
+Pastor só lê, Tesoureiro não vê.
+
+
+---
+
+🆘 2. Ajuda Diaconal – extremamente detalhado
+
+Somente para MEMBROS.
+
+Tipos:
+
+Cesta básica
+
+Remédio
+
+Aluguel
+
+Consulta
+
+Transporte
+
+Outros
+
+
+Campos:
+
+membro beneficiado
+
+tipo de ajuda
+
+valor
+
+data
+
+descrição
+
+comprovante (obrigatório)
+
+
+Sistema gera automaticamente:
+
+saída no módulo financeiro (categoria “Ajuda Diaconal”)
+
+
+
+---
+
+📘 3. BOLETIM DOMINICAL – versão final detalhada
+
+O sistema abre um boletim NOVO toda semana, sem copiar o anterior.
+
+O boletim possui:
+
+
+---
+
+🔷 A) Cabeçalho – extremamente detalhado
+
+Inclui:
+
+Nome da igreja
+Igreja Presbiteriana Emaús – IPE
+
+Local e data
+“São Paulo, 02 de novembro de 2025”
+
+Número da edição
+
+Ano litúrgico
+
+Banner/cabeçalho superior (imagem fixa)
+
+
+
+---
+
+🔷 B) Devocional / Mensagem Pastoral
+
+Título
+
+Texto bíblico base
+
+Corpo da mensagem
+
+
+Texto fornecido pelo pastor.
+
+
+---
+
+🔷 C) Liturgia completa
+
+Cada item aparece com:
+
+título
+
+campo para texto
+
+campo para referência
+
+
+Itens:
+
+Prelúdio
+
+Leitura Bíblica 1
+
+Hino 1
+
+Oração de louvor
+
+Leitura Bíblica 2
+
+Hino 2
+
+Oração de contrição
+
+Leitura Bíblica 3
+
+Oração de gratidão
+
+Cântico de consagração
+
+Oração de dedicação
+
+Mensagem bíblica
+
+Hino final
+
+Oração final
+
+Bênção apostólica
+
+Pós-lúdio
+
+Agradecimentos e avisos
+
+
+Itens especiais com checkbox:
+
+Batismo infantil
+
+Ceia do Senhor
+
+Credo apostólico
+
+Participações musicais
+
+
+
+---
+
+🔷 D) Relatório da EBD – formato padrão IPE
+
+Cabeçalho:
+
+Mês/ano (ex. “nov/2025”)
+
+
+Tabela com colunas por domingo:
+
+Matriculados
+
+Presentes
+
+Ausentes
+
+Visitantes
+
+Bíblias
+
+Total
+
+
+Suporta meses com 4 ou 5 domingos.
+
+
+---
+
+🔷 E) Avisos dos departamentos
+
+Cada aviso contém:
+
+título do departamento
+
+texto do aviso
+
+data/hora do evento (opcional)
+
+
+Departamentos padrão:
+
+SAF
+
+UPH
+
+UMP
+
+UPA
+
+CPE
+
+CER
+
+Semana de oração
+
+Congregação
+
+Eventos gerais
+
+
+
+---
+
+🔷 F) Bloco fixo “Transmissão ao vivo pelo YouTube”
+
+Sempre aparece.
+
+
+---
+
+🔷 G) Oferta do dia
+
+Somente:
+
+Social
+
+Geral
+
+Obra
+
+Missões
+
+
+
+---
+
+🔷 H) Regras de reverência no culto
+
+Texto fixo com 5 itens.
+
+
+---
+
+🔷 I) Bloco fixo “Projeto: Reforma do Edifício de Educação Religiosa”
+
+Com:
+
+Versículo
+
+Objetivo
+
+Administração
+
+Forma de contribuição
+
+
+
+---
+
+🔷 J) Aniversariantes da semana
+
+Somente membros.
+
+Lista separada:
+
+aniversários pessoais
+
+aniversários de casamento
+
+
+
+---
+
+🔷 K) Pedidos de oração
+
+Categorias fixas:
+
+Conversão
+
+Direção divina
+
+IPE (famílias, evangelização, construção, enlutados)
+
+Emprego
+
+Saúde
+
+
+Cada categoria pode ter vários nomes.
+
+Campo adicional:
+
+Responsável pelo quadro (seleciona um presbítero ou pastor)
+
+
+
+---
+
+🔷 L) Bloco da liderança – completamente detalhado
+
+Inclui:
+
+Pastor
+
+Presbíteros (ativos e eméritos)
+
+Diáconos
+
+Seminarista
+
+Missionárias
+
+
+Inclui telefone e email quando existir.
+
+
+---
+
+🔷 M) Horários fixos da IPE
+
+EBD – 9h
+
+Culto solene – 18h
+
+Reunião de oração – terça 19h30
+
+Estudo bíblico – quinta 19h30
+
+
+
+---
+
+🔷 N) Dados bancários + PIX
+
+Agência
+
+Conta
+
+Nome
+
+CNPJ
+
+Chave PIX
+
+QR Code
+
+
+
+---
+
+🔷 O) Informações finais do boletim
+
+Bloco fixo:
+
+“Todas as informações para o boletim devem ser enviadas até quinta-feira para o e-mail: ipbemaus@gmail.com”
+
+Texto sobre o QR Code com acesso à história da igreja e calendário anual.
+
+
+
+---
+
+🟤 PORTAL LGPD – EXTREMAMENTE DETALHADO
+
+Portal LGPD é independente dos painéis administrativos.
+Qualquer pessoa com dados no sistema pode acessar.
+
+Fluxo:
+
+
+---
+
+1️⃣ Verificação da identidade
+
+Usuário informa:
+
+Nome completo
+
+Data de nascimento
+
+Email
+
+
+Sistema verifica com o cadastro.
+
+
+---
+
+2️⃣ Envio do código por email
+
+Se estiver tudo certo:
+
+sistema envia código de verificação (6 dígitos)
+
+
+
+---
+
+3️⃣ Portal LGPD (completo)
+
+O usuário pode:
+
+✔ Exportar seus dados
+
+PDF
+
+Excel
+
+JSON
+
+
+Inclui:
+
+dados pessoais
+
+dados financeiros vinculados
+
+boletins em que aparece
+
+registros de ajuda
+
+dados pastorais vinculados
+
+histórico de presença como visitante
+
+consentimentos LGPD
+
+
+
+---
+
+✔ Solicitar correção
+
+envia ticket ao Pastor
+
+Pastor decide e aplica
+
+
+
+---
+
+✔ Solicitar exclusão total ou parcial
+
+o sistema registra protocolo
+
+Pastor analisa
+
+exclusão pode ser física ou lógica (dependendo da lei)
+
+
+
+---
+
+✔ Registrar novo consentimento ou revogar
+
+Histórico mantido no sistema.
+
+
+---
+
+🔐 LOG COMPLETO DO SISTEMA
+
+O sistema guarda:
+
+Ação executada
+
+Usuário
+
+Data/hora
+
+IP
+
+Alterações (antes/depois)
+
+Uploads
+
+Deleções (soft delete recuperável)
+
+Acessos LGPD
+
+Pedidos de LGPD
+
+Boletins gerados
+
+Edições de boletim
+
+Entradas/saídas financeiras
+
+
+
+---
+
+🧱 RESUMO GERAL FINAL DO SISTEMA
+
+A separação de painéis é TOTAL e absoluta:
+
+Função	Pastor	Tesoureiro	Diácono	Portal LGPD
+
+Membros	✔️	❌	❌	🔍 (ver seus próprios dados)
+Seminaristas	✔️	❌	❌	❌
+Catecúmenos	✔️	❌	❌	❌
+Visitantes	🔍	❌	✔️	🔍
+Dízimos	🔍	✔️	🔍	🔍 (se do próprio membro)
+Ofertas	🔍	✔️	🔍	🔍
+Saídas	🔍	✔️	🔍	❌
+Ajuda Diaconal	🔍	🔍	✔️	🔍
+Boletim	🔍	❌	✔️	❌
+Relatórios Pastoral	✔️	❌	❌	❌
+Relatórios Financeiros	🔍	✔️	🔍	❌
+Relatórios Diaconais	❌	❌	✔️	❌
+Solicitações LGPD	✔️	❌	❌	✔️
