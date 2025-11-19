@@ -12,6 +12,7 @@ import Login from "@/pages/login";
 import PastorDashboard from "@/pages/pastor/dashboard";
 import PastorMembers from "@/pages/pastor/members";
 import PastorUsers from "@/pages/pastor/users";
+import PastorSeminarians from "@/pages/pastor/seminarians";
 
 // Treasurer Pages
 import TreasurerDashboard from "@/pages/treasurer/dashboard";
@@ -57,7 +58,7 @@ function Router() {
       <Route path="/pastor/seminarians">
         {() => (
           <AppLayout role="pastor" userName={mockAuth.userName}>
-            <PlaceholderPage title="Seminaristas" />
+            <PastorSeminarians />
           </AppLayout>
         )}
       </Route>
