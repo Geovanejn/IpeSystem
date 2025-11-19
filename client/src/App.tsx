@@ -11,6 +11,7 @@ import Login from "@/pages/login";
 // Pastor Pages
 import PastorDashboard from "@/pages/pastor/dashboard";
 import PastorMembers from "@/pages/pastor/members";
+import PastorUsers from "@/pages/pastor/users";
 
 // Treasurer Pages
 import TreasurerDashboard from "@/pages/treasurer/dashboard";
@@ -71,6 +72,13 @@ function Router() {
         {() => (
           <AppLayout role="pastor" userName={mockAuth.userName}>
             <PlaceholderPage title="Visitantes (Somente Leitura)" />
+          </AppLayout>
+        )}
+      </Route>
+      <Route path="/pastor/users">
+        {() => (
+          <AppLayout role="pastor" userName={mockAuth.userName}>
+            <PastorUsers />
           </AppLayout>
         )}
       </Route>

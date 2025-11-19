@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { authenticateUser, createSession, getSession, deleteSession } from "./auth";
+import { authenticateUser, createSession, getSession, deleteSession, hashPassword } from "./auth";
 import { z } from "zod";
 import { 
   insertMemberSchema, 
@@ -90,6 +90,199 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Session error:", error);
       res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // ============================================
+  // USERS ROUTES (Pastor - User Management)
+  // ============================================
+
+  const createUserSchema = z.object({
+    username: z.string().min(3, "Usuário deve ter no mínimo 3 caracteres"),
+    password: z.string().min(6, "Senha deve ter no mínimo 6 caracteres"),
+    role: z.enum(["pastor", "treasurer", "deacon"]),
+    memberId: z.string().optional(),
+  });
+
+  const updateUserSchema = z.object({
+    password: z.string().min(6, "Senha deve ter no mínimo 6 caracteres").optional(),
+    role: z.enum(["pastor", "treasurer", "deacon"]).optional(),
+    memberId: z.string().optional(),
+  });
+
+  app.get("/api/users", async (req, res) => {
+    try {
+      const users = await storage.getUsers();
+      
+      // Não retornar senhas hasheadas
+      const safeUsers = users.map(({ password, ...user }) => user);
+      
+      res.json(safeUsers);
+    } catch (error) {
+      console.error("Failed to fetch users:", error);
+      res.status(500).json({ error: "Failed to fetch users" });
+    }
+  });
+
+  app.post("/api/users", async (req, res) => {
+    try {
+      const sessionId = req.headers.authorization?.replace("Bearer ", "");
+      const session = sessionId ? getSession(sessionId) : null;
+      
+      if (!session) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      const validated = createUserSchema.parse(req.body);
+      
+      // Hash da senha
+      const hashedPassword = await hashPassword(validated.password);
+      
+      // Criar usuário
+      const user = await storage.createUser({
+        username: validated.username,
+        password: hashedPassword,
+        role: validated.role,
+        memberId: validated.memberId,
+      });
+      
+      // Criar audit log
+      await storage.createAuditLog({
+        userId: session.userId,
+        action: "CREATE",
+        tableName: "users",
+        recordId: user.id,
+        changesAfter: JSON.stringify({ 
+          username: user.username, 
+          role: user.role, 
+          memberId: user.memberId 
+        }),
+      });
+      
+      // Não retornar senha hasheada
+      const { password, ...safeUser } = user;
+      res.status(201).json(safeUser);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      console.error("Failed to create user:", error);
+      res.status(500).json({ error: "Failed to create user" });
+    }
+  });
+
+  app.put("/api/users/:id", async (req, res) => {
+    try {
+      const sessionId = req.headers.authorization?.replace("Bearer ", "");
+      const session = sessionId ? getSession(sessionId) : null;
+      
+      if (!session) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      const validated = updateUserSchema.parse(req.body);
+      
+      // Buscar usuário antes da atualização
+      const userBefore = await storage.getUser(req.params.id);
+      
+      if (!userBefore) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      
+      // Preparar dados para atualização
+      const updateData: any = {};
+      
+      if (validated.role) {
+        updateData.role = validated.role;
+      }
+      
+      if (validated.memberId !== undefined) {
+        updateData.memberId = validated.memberId;
+      }
+      
+      if (validated.password) {
+        updateData.password = await hashPassword(validated.password);
+      }
+      
+      // Atualizar usuário
+      const user = await storage.updateUser(req.params.id, updateData);
+      
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      
+      // Criar audit log
+      await storage.createAuditLog({
+        userId: session.userId,
+        action: "UPDATE",
+        tableName: "users",
+        recordId: user.id,
+        changesBefore: JSON.stringify({ 
+          username: userBefore.username, 
+          role: userBefore.role, 
+          memberId: userBefore.memberId,
+          passwordChanged: validated.password ? false : undefined
+        }),
+        changesAfter: JSON.stringify({ 
+          username: user.username, 
+          role: user.role, 
+          memberId: user.memberId,
+          passwordChanged: validated.password ? true : undefined
+        }),
+      });
+      
+      // Não retornar senha hasheada
+      const { password, ...safeUser } = user;
+      res.json(safeUser);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      console.error("Failed to update user:", error);
+      res.status(500).json({ error: "Failed to update user" });
+    }
+  });
+
+  app.delete("/api/users/:id", async (req, res) => {
+    try {
+      const sessionId = req.headers.authorization?.replace("Bearer ", "");
+      const session = sessionId ? getSession(sessionId) : null;
+      
+      if (!session) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      // Buscar usuário antes da exclusão
+      const userBefore = await storage.getUser(req.params.id);
+      
+      if (!userBefore) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      
+      // Deletar usuário
+      const success = await storage.deleteUser(req.params.id);
+      
+      if (!success) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      
+      // Criar audit log
+      await storage.createAuditLog({
+        userId: session.userId,
+        action: "DELETE",
+        tableName: "users",
+        recordId: req.params.id,
+        changesBefore: JSON.stringify({ 
+          username: userBefore.username, 
+          role: userBefore.role, 
+          memberId: userBefore.memberId 
+        }),
+      });
+      
+      res.status(204).send();
+    } catch (error) {
+      console.error("Failed to delete user:", error);
+      res.status(500).json({ error: "Failed to delete user" });
     }
   });
 

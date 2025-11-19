@@ -1,7 +1,7 @@
 import { 
   Users, BookOpen, UserPlus, Calendar, BarChart3, 
   DollarSign, TrendingUp, ShoppingCart, FileText,
-  UserCheck, Heart, Book, Shield, Home, LogOut
+  UserCheck, Heart, Book, Shield, Home, LogOut, UserCog
 } from "lucide-react";
 import {
   Sidebar,
@@ -33,6 +33,7 @@ const menuItemsByRole = {
     { title: "Seminaristas", url: "/pastor/seminarians", icon: BookOpen },
     { title: "Catecúmenos", url: "/pastor/catechumens", icon: UserPlus },
     { title: "Visitantes", url: "/pastor/visitors", icon: UserCheck },
+    { title: "Usuários", url: "/pastor/users", icon: UserCog },
     { title: "Aniversariantes", url: "/pastor/birthdays", icon: Calendar },
     { title: "Relatórios", url: "/pastor/reports", icon: BarChart3 },
   ],
