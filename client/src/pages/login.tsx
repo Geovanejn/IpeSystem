@@ -84,14 +84,11 @@ export default function Login() {
           <div className="flex justify-center">
             <img 
               src={logoUrl} 
-              alt="Logo IPE - Igreja Presbiteriana Emaús" 
-              className="w-full max-w-[250px]"
+              alt="Logo IPE" 
+              className="w-full max-w-[150px]"
             />
           </div>
-          <CardTitle className="text-2xl text-center">Sistema IPE</CardTitle>
-          <CardDescription className="text-center">
-            Igreja Presbiteriana Emaús
-          </CardDescription>
+          <CardTitle className="text-2xl text-center">Sistema Integrado de Gestão</CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>

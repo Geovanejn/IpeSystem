@@ -89,8 +89,8 @@ export function AppSidebar({ role, userName = "Usuário" }: AppSidebarProps) {
         <div className="flex flex-col items-center gap-4">
           <img 
             src={logoUrl} 
-            alt="Logo IPE - Igreja Presbiteriana Emaús" 
-            className="w-full max-w-[200px]"
+            alt="Logo IPE" 
+            className="w-full max-w-[120px]"
           />
           <Badge className={`${roleColors[role]} text-xs font-medium px-3 py-1`}>
             {roleTitles[role]}
