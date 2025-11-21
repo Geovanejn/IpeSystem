@@ -458,7 +458,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const validated = insertCatechumenSchema.parse(req.body);
       const catechumen = await storage.createCatechumen(validated);
-      res.status(201).json(catechumen);
+      
+      // ✅ Se criar já como "concluido", criar membro automaticamente
+      if (validated.stage === "concluido") {
+        const admissionDate = catechumen.expectedProfessionDate || new Date().toISOString().split('T')[0];
+        
+        const newMember = await storage.createMember({
+          fullName: catechumen.fullName,
+          birthDate: "2000-01-01",
+          gender: "masculino",
+          maritalStatus: "solteiro",
+          primaryPhone: "A preencher",
+          email: `${catechumen.fullName.toLowerCase().replace(/\s+/g, '.')}@pendente.com`,
+          address: "A preencher",
+          addressNumber: "S/N",
+          neighborhood: "A preencher",
+          zipCode: "00000-000",
+          communionStatus: "comungante",
+          ecclesiasticalRole: "membro",
+          memberStatus: "ativo",
+          admissionDate,
+          lgpdConsentUrl: "https://pendente.com/consent.pdf",
+          pastoralNotes: `✅ CRIADO AUTOMATICAMENTE a partir do catecúmeno concluído em ${new Date().toLocaleDateString('pt-BR')}.\n\n⚠️ ATENÇÃO: Complete os dados pessoais (data nascimento, gênero, telefone, email, endereço) assim que possível.`,
+        });
+
+        const session = getSession(req.headers.authorization?.replace("Bearer ", "") || "");
+        if (session) {
+          await storage.createAuditLog({
+            userId: session.userId,
+            action: "CREATE",
+            tableName: "members",
+            recordId: newMember.id,
+            changesBefore: null,
+            changesAfter: JSON.stringify(newMember),
+          });
+        }
+
+        console.log(`✅ [CATECHUMEN CREATION] ${catechumen.fullName} → Member created (ID: ${newMember.id})`);
+
+        res.status(201).json({
+          ...catechumen,
+          memberCreated: true,
+          memberId: newMember.id,
+          memberName: newMember.fullName
+        });
+      } else {
+        res.status(201).json(catechumen);
+      }
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ error: error.errors });
