@@ -23,6 +23,9 @@ import TreasurerDashboard from "@/pages/treasurer/dashboard";
 import TreasurerTithes from "@/pages/treasurer/tithes";
 import TreasurerOfferings from "@/pages/treasurer/offerings";
 import TreasurerBookstore from "@/pages/treasurer/bookstore";
+import TreasurerLoans from "@/pages/treasurer/loans";
+import TreasurerExpenses from "@/pages/treasurer/expenses";
+import TreasurerFinancialReports from "@/pages/treasurer/financial-reports";
 
 // Deacon Pages
 import DeaconDashboard from "@/pages/deacon/dashboard";
@@ -137,21 +140,21 @@ function Router() {
       <Route path="/treasurer/loans">
         {() => (
           <AppLayout role="treasurer" userName="Tesoureiro Maria Santos">
-            <PlaceholderPage title="Empréstimos" />
+            <TreasurerLoans />
           </AppLayout>
         )}
       </Route>
       <Route path="/treasurer/expenses">
         {() => (
           <AppLayout role="treasurer" userName="Tesoureiro Maria Santos">
-            <PlaceholderPage title="Saídas / Despesas" />
+            <TreasurerExpenses />
           </AppLayout>
         )}
       </Route>
       <Route path="/treasurer/reports">
         {() => (
           <AppLayout role="treasurer" userName="Tesoureiro Maria Santos">
-            <PlaceholderPage title="Relatórios Financeiros" />
+            <TreasurerFinancialReports />
           </AppLayout>
         )}
       </Route>

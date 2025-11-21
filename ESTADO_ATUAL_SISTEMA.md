@@ -248,6 +248,60 @@
 - Testes de integração para APIs backend
 - **330+ linhas** de especificações de teste
 
+### 20. ✅ Painel do Tesoureiro - Empréstimos (Painel do Tesoureiro)
+**Status:** Completo e Operacional (Implementado em 21/11/2025)
+
+**Funcionalidades:**
+- CRUD completo de empréstimos aos membros
+- Campos: Membro, Descrição, Valor (R$), Taxa de Juros (%), Data de Vencimento, Status
+- 3 status: Ativo, Pago, Atrasado
+- Cards com totais por status (Ativo em azul, Pago em verde, Atrasado em vermelho)
+- Tabela responsiva com histórico de empréstimos
+- React Query + React Hook Form com validação Zod
+- Dialog modal para novo/editar empréstimo
+- Vinculação automática com membros (select dropdown)
+- Interface em `/treasurer/loans`
+- **430+ linhas de código**
+- ✅ Integração com sidebar (icon FileText)
+- ✅ Todos os data-testids implementados
+- ✅ LSP errors corrigidos (z.coerce.number() para transformação)
+
+### 21. ✅ Painel do Tesoureiro - Saídas/Despesas (Painel do Tesoureiro)
+**Status:** Completo e Operacional (Implementado em 21/11/2025)
+
+**Funcionalidades:**
+- CRUD completo de despesas operacionais
+- Campos: Categoria, Descrição, Valor (R$), Data
+- 7 categorias: Aluguel, Água, Eletricidade, Manutenção, Salários, Suprimentos, Outros
+- Cards com totais por categoria + total geral (colorizado)
+- Tabela responsiva com histórico de despesas
+- Badges coloridas por categoria (cores distintas)
+- React Query + React Hook Form com validação Zod
+- Dialog modal para novo/editar despesa
+- Interface em `/treasurer/expenses`
+- **380+ linhas de código**
+- ✅ Integração com sidebar (icon DollarSign)
+- ✅ Todos os data-testids implementados
+- ✅ LSP errors corrigidos
+
+### 22. ✅ Painel do Tesoureiro - Relatórios Financeiros (Painel do Tesoureiro)
+**Status:** Completo e Operacional (Implementado em 21/11/2025)
+
+**Funcionalidades:**
+- Dashboard com 4 KPIs principais: Total de Receita, Total de Despesa, Saldo Líquido, Taxa de Cobertura
+- 3 abas de análise: Evolução Mensal, Receitas, Despesas
+- **Evolução Mensal:** Gráfico de linhas com 12 meses (Receita vs Despesa vs Saldo)
+- **Receitas:** Gráfico pizza (Dízimos vs Ofertas) + Detalhamento
+- **Despesas:** Gráfico barras (por categoria) + Detalhamento
+- Todos os gráficos com tooltips formatados em R$
+- Botão de exportação PDF (placeholder)
+- React Query para buscar dados de tithes, offerings, expenses
+- Recharts para visualizações avançadas
+- Interface em `/treasurer/reports`
+- **400+ linhas de código**
+- ✅ Integração com sidebar (icon BarChart3)
+- ✅ Todos os data-testids implementados
+
 ### 19. ✅ Painel do Diácono - Ajuda Diaconal (Painel do Diácono)
 **Status:** Completo e Operacional (Implementado em 21/11/2025)
 
@@ -391,11 +445,11 @@
 ### Progresso Geral
 - **Autenticação:** 100% ✅
 - **Painel do Pastor:** 100% ✅ (8/8 módulos: Membros, Usuários, Seminaristas, Catecúmenos, Visitantes, Aniversariantes, Relatórios, Dashboard)
-- **Painel do Tesoureiro:** 57% ✅ (4/7 módulos: Dashboard, Dízimos, Ofertas, Livraria - 400+ linhas)
-- **Painel do Diácono:** 67% ✅ (2/3 módulos: Dashboard, Visitantes CRUD, Ajuda Diaconal - 420+450 linhas)
+- **Painel do Tesoureiro:** 100% ✅ (7/7 módulos: Dashboard, Dízimos, Ofertas, Livraria, Empréstimos, Saídas, Relatórios)
+- **Painel do Diácono:** 67% ✅ (2/3 módulos: Dashboard, Visitantes CRUD, Ajuda Diaconal - falta Boletim)
 - **Portal LGPD:** 5% (dashboard básico)
 - **Testes Automatizados:** 100% (Especificações criadas para Pastor)
-- **Progresso Total:** ~62% 🚀
+- **Progresso Total:** ~75% 🚀
 
 ---
 
