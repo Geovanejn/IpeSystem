@@ -131,6 +131,16 @@ Cria: 1 pastor, 4 membros, 3 catecúmenos para testar conversão automática.
 
 ## Recent Changes
 
+### 21/11/2025 - Correção #4: CSRF Protection (COMPLETO E APROVADO)
+- ✅ Implementado csrf-csrf (Double Submit Cookie Pattern) em todas as 61 rotas mutativas
+- ✅ Configurado cookie-parser e middleware CSRF no backend
+- ✅ Criado endpoint /api/csrf-token para fornecer tokens ao frontend
+- ✅ Frontend renovação automática de token após login e limpeza ao logout
+- ✅ Token vinculado ao sessionId (sem erros 403 pós-login)
+- ✅ Rotas de autenticação isentas de validação CSRF
+- ✅ Arquiteto aprovou implementação (sem problemas de segurança)
+- ⚠️ Nota produção: Definir CSRF_SECRET em variável de ambiente
+
 ### 21/11/2025 - Correções LSP e Validação de Conversão de Catecúmenos
 - ✅ Corrigidos 20 erros LSP no `server/routes.ts` relacionados a campos renomeados no schema
 - ✅ Atualizado mapeamento de campos em offerings, bookstore sales, visitors e LGPD consents

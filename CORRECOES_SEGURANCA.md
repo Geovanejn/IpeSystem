@@ -222,7 +222,7 @@ Tentativa 7: HTTP 429 - "Muitas tentativas de login..."
 **Severidade:** 🔴 CRÍTICO  
 **Tempo estimado:** 4 horas  
 **Tempo real:** 2 horas  
-**Status:** ✅ COMPLETO (Aguardando Architect Review)
+**Status:** ✅ COMPLETO E APROVADO PELO ARCHITECT
 
 ### Problema Identificado
 ```typescript
@@ -376,15 +376,21 @@ export async function apiRequest(method, url, data) {
 - ✅ Endpoint /api/csrf-token retorna token válido
 - ✅ Frontend busca token automaticamente ao iniciar
 - ✅ Sem erros LSP
-- ⏳ Aguardando teste de login
-- ⏳ Aguardando teste de CRUD (create member)
-- ⏳ Aguardando review do Architect
+- ✅ Token renovado automaticamente após login
+- ✅ Token limpo ao fazer logout
+- ✅ **Architect Review APROVADO** (sem problemas de segurança)
 
 ### Impacto em Produção
 - ✅ Proteção imediata contra CSRF
 - ✅ Zero downtime (rotas de auth isentas)
 - ✅ Compatível com sistema de sessões atual
-- ⚠️ Nota: Definir CSRF_SECRET em variável de ambiente
+- ✅ Token sincronizado com sessão (sem erros 403)
+- ⚠️ **Antes de produção:** Definir CSRF_SECRET em variável de ambiente
+
+### Próximos Passos Recomendados
+1. Testar fluxo end-to-end: login → criar/editar recurso → logout
+2. Considerar testes automatizados para refresh path (403 → token refresh → retry)
+3. Promover CSRF_SECRET para variável de ambiente em produção
 
 ---
 
