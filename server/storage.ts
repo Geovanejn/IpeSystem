@@ -80,17 +80,22 @@ export interface IStorage {
   getLoans(): Promise<Loan[]>;
   getLoan(id: string): Promise<Loan | undefined>;
   createLoan(loan: InsertLoan): Promise<Loan>;
+  updateLoan(id: string, loan: Partial<InsertLoan>): Promise<Loan | undefined>;
+  deleteLoan(id: string): Promise<boolean>;
   
   // Expenses
   getExpenses(): Promise<Expense[]>;
   getExpense(id: string): Promise<Expense | undefined>;
   createExpense(expense: InsertExpense): Promise<Expense>;
+  updateExpense(id: string, expense: Partial<InsertExpense>): Promise<Expense | undefined>;
   deleteExpense(id: string): Promise<boolean>;
   
   // Diaconal Help
   getDiaconalHelps(): Promise<DiaconalHelp[]>;
   getDiaconalHelp(id: string): Promise<DiaconalHelp | undefined>;
   createDiaconalHelp(help: InsertDiaconalHelp): Promise<DiaconalHelp>;
+  updateDiaconalHelp(id: string, help: Partial<InsertDiaconalHelp>): Promise<DiaconalHelp | undefined>;
+  deleteDiaconalHelp(id: string): Promise<boolean>;
   
   // Bulletins
   getBulletins(): Promise<Bulletin[]>;
@@ -334,6 +339,19 @@ export class DBStorage implements IStorage {
     return result[0];
   }
 
+  async updateLoan(id: string, loan: Partial<InsertLoan>): Promise<Loan | undefined> {
+    const result = await db.update(loans)
+      .set({ ...loan, updatedAt: new Date() })
+      .where(eq(loans.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteLoan(id: string): Promise<boolean> {
+    const result = await db.delete(loans).where(eq(loans.id, id));
+    return (result.rowCount ?? 0) > 0;
+  }
+
   // Expenses
   async getExpenses(): Promise<Expense[]> {
     return db.select().from(expenses).orderBy(desc(expenses.date));
@@ -346,6 +364,14 @@ export class DBStorage implements IStorage {
 
   async createExpense(insertExpense: InsertExpense): Promise<Expense> {
     const result = await db.insert(expenses).values(insertExpense).returning();
+    return result[0];
+  }
+
+  async updateExpense(id: string, expense: Partial<InsertExpense>): Promise<Expense | undefined> {
+    const result = await db.update(expenses)
+      .set({ ...expense, updatedAt: new Date() })
+      .where(eq(expenses.id, id))
+      .returning();
     return result[0];
   }
 
@@ -367,6 +393,19 @@ export class DBStorage implements IStorage {
   async createDiaconalHelp(insertHelp: InsertDiaconalHelp): Promise<DiaconalHelp> {
     const result = await db.insert(diaconalHelp).values(insertHelp).returning();
     return result[0];
+  }
+
+  async updateDiaconalHelp(id: string, help: Partial<InsertDiaconalHelp>): Promise<DiaconalHelp | undefined> {
+    const result = await db.update(diaconalHelp)
+      .set({ ...help, updatedAt: new Date() })
+      .where(eq(diaconalHelp.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteDiaconalHelp(id: string): Promise<boolean> {
+    const result = await db.delete(diaconalHelp).where(eq(diaconalHelp.id, id));
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Bulletins

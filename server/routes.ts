@@ -746,13 +746,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validated = insertLoanSchema.parse(req.body);
       const loan = await storage.createLoan(validated);
       
-      // TODO: Gerar automaticamente parcelas em expenses
-      // Para cada parcela de 1 a N:
-      // - Criar expense com category = "parcela_emprestimo"
-      // - loanId = loan.id
-      // - installmentNumber = i
-      // - amount = loan.installmentAmount
-      // - date = firstInstallmentDate + (i-1) meses
+      // Gerar automaticamente parcelas em expenses
+      for (let i = 1; i <= loan.installments; i++) {
+        const installmentDate = new Date(loan.firstInstallmentDate);
+        installmentDate.setMonth(installmentDate.getMonth() + (i - 1));
+        
+        await storage.createExpense({
+          category: "parcela_emprestimo",
+          description: `Parcela ${i}/${loan.installments} - ${loan.creditorName}`,
+          amount: loan.installmentAmount,
+          date: installmentDate.toISOString().split('T')[0],
+          receiptUrl: loan.receiptUrl || "https://pendente.com/receipt.pdf",
+          loanId: loan.id,
+          installmentNumber: i,
+        });
+      }
       
       res.status(201).json(loan);
     } catch (error) {
@@ -760,6 +768,86 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: error.errors });
       }
       res.status(500).json({ error: "Failed to create loan" });
+    }
+  });
+
+  app.patch("/api/loans/:id", async (req, res) => {
+    try {
+      const validated = insertLoanSchema.partial().parse(req.body);
+      const loanBefore = await storage.getLoan(req.params.id);
+      
+      if (!loanBefore) {
+        return res.status(404).json({ error: "Loan not found" });
+      }
+      
+      const loan = await storage.updateLoan(req.params.id, validated);
+      
+      if (!loan) {
+        return res.status(404).json({ error: "Loan not found" });
+      }
+      
+      // Se o número de parcelas mudou, deletar expenses antigas e gerar novas
+      if (validated.installments && validated.installments !== loanBefore.installments) {
+        // Deletar expenses antigas relacionadas ao loan
+        const allExpenses = await storage.getExpenses();
+        const loanExpenses = allExpenses.filter(e => e.loanId === req.params.id);
+        
+        for (const expense of loanExpenses) {
+          await storage.deleteExpense(expense.id);
+        }
+        
+        // Gerar novas expenses com o novo número de parcelas
+        for (let i = 1; i <= loan.installments; i++) {
+          const installmentDate = new Date(loan.firstInstallmentDate);
+          installmentDate.setMonth(installmentDate.getMonth() + (i - 1));
+          
+          await storage.createExpense({
+            category: "parcela_emprestimo",
+            description: `Parcela ${i}/${loan.installments} - ${loan.creditorName}`,
+            amount: loan.installmentAmount,
+            date: installmentDate.toISOString().split('T')[0],
+            receiptUrl: loan.receiptUrl || undefined,
+            loanId: loan.id,
+            installmentNumber: i,
+          });
+        }
+      }
+      
+      res.json(loan);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      res.status(500).json({ error: "Failed to update loan" });
+    }
+  });
+
+  app.delete("/api/loans/:id", async (req, res) => {
+    try {
+      const loan = await storage.getLoan(req.params.id);
+      
+      if (!loan) {
+        return res.status(404).json({ error: "Loan not found" });
+      }
+      
+      // Deletar todas as expenses relacionadas ao loan (cascade)
+      const allExpenses = await storage.getExpenses();
+      const loanExpenses = allExpenses.filter(e => e.loanId === req.params.id);
+      
+      for (const expense of loanExpenses) {
+        await storage.deleteExpense(expense.id);
+      }
+      
+      // Agora deletar o loan
+      const success = await storage.deleteLoan(req.params.id);
+      
+      if (!success) {
+        return res.status(404).json({ error: "Loan not found" });
+      }
+      
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete loan" });
     }
   });
 
@@ -789,8 +877,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.patch("/api/expenses/:id", async (req, res) => {
+    try {
+      // Verificar se a expense existe e validar
+      const existingExpense = await storage.getExpense(req.params.id);
+      
+      if (!existingExpense) {
+        return res.status(404).json({ error: "Expense not found" });
+      }
+      
+      // Bloquear edição se a expense está vinculada a um empréstimo ou é ajuda diaconal
+      if (existingExpense.loanId || existingExpense.category === "ajuda_diaconal") {
+        return res.status(403).json({ 
+          error: "Cannot update expenses linked to loans or diaconal help. Please edit the loan or diaconal help record instead." 
+        });
+      }
+      
+      const validated = insertExpenseSchema.partial().parse(req.body);
+      const expense = await storage.updateExpense(req.params.id, validated);
+      
+      if (!expense) {
+        return res.status(404).json({ error: "Expense not found" });
+      }
+      
+      res.json(expense);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      res.status(500).json({ error: "Failed to update expense" });
+    }
+  });
+
   app.delete("/api/expenses/:id", async (req, res) => {
     try {
+      // Verificar se a expense existe e validar
+      const existingExpense = await storage.getExpense(req.params.id);
+      
+      if (!existingExpense) {
+        return res.status(404).json({ error: "Expense not found" });
+      }
+      
+      // Bloquear exclusão se a expense está vinculada a um empréstimo ou é ajuda diaconal
+      if (existingExpense.loanId || existingExpense.category === "ajuda_diaconal") {
+        return res.status(403).json({ 
+          error: "Cannot delete expenses linked to loans or diaconal help. Please delete the loan or diaconal help record instead." 
+        });
+      }
+      
       const success = await storage.deleteExpense(req.params.id);
       
       if (!success) {
@@ -819,13 +953,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/diaconal-help", async (req, res) => {
     try {
       const validated = insertDiaconalHelpSchema.parse(req.body);
-      const help = await storage.createDiaconalHelp(validated);
       
-      // TODO: Criar automaticamente expense com category = "ajuda_diaconal"
-      // - amount = help.amount
-      // - date = help.date
-      // - description = help.description
-      // - receiptUrl = help.receiptUrl
+      // Criar expense automaticamente
+      const expense = await storage.createExpense({
+        category: "ajuda_diaconal",
+        description: validated.description,
+        amount: validated.amount,
+        date: validated.date,
+        receiptUrl: validated.receiptUrl,
+      });
+      
+      // Criar ajuda diaconal vinculada à expense
+      const help = await storage.createDiaconalHelp({
+        ...validated,
+        expenseId: expense.id,
+      });
       
       res.status(201).json(help);
     } catch (error) {
@@ -833,6 +975,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: error.errors });
       }
       res.status(500).json({ error: "Failed to create diaconal help" });
+    }
+  });
+
+  app.patch("/api/diaconal-help/:id", async (req, res) => {
+    try {
+      const validated = insertDiaconalHelpSchema.partial().parse(req.body);
+      const help = await storage.updateDiaconalHelp(req.params.id, validated);
+      
+      if (!help) {
+        return res.status(404).json({ error: "Diaconal help not found" });
+      }
+      
+      res.json(help);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      res.status(500).json({ error: "Failed to update diaconal help" });
+    }
+  });
+
+  app.delete("/api/diaconal-help/:id", async (req, res) => {
+    try {
+      const success = await storage.deleteDiaconalHelp(req.params.id);
+      
+      if (!success) {
+        return res.status(404).json({ error: "Diaconal help not found" });
+      }
+      
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete diaconal help" });
     }
   });
 

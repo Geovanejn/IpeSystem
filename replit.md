@@ -164,16 +164,38 @@ Development:
 - Database: `npm run db:push` applies schema changes
 
 **Current Implementation Status**:
+
+**Pastor Panel:**
 - ✅ Authentication and session management
-- ✅ User management (CRUD for system users)
-- ✅ Member management (CRUD)
-- ✅ Tithe tracking (basic implementation)
-- ✅ Visitor tracking (basic implementation)
+- ✅ User management (CRUD for system users with audit logging)
+- ✅ Member management (CRUD complete with LGPD consent)
+- ✅ Seminarian management (CRUD complete with education tracking)
+- ✅ Catechumen management (CRUD complete with automatic member creation upon conclusion)
+- ✅ Visitor tracking (read-only view for pastor)
+- ✅ Pastoral reports (comprehensive statistics, charts, CSV export)
+- ✅ Birthday/Anniversary tracking (automated weekly lists)
+
+**Treasurer Panel:**
+- ✅ Tithes management (CRUD complete with member linking, payment methods, monthly totals)
+- ✅ Offerings management (CRUD complete with type categorization, statistics by type)
+- ✅ Bookstore sales (CRUD complete with product tracking, revenue statistics)
+- 🚧 Loans management (UI complete, pending automatic installment expense generation)
+- 🚧 Expenses management (basic CRUD, needs update/edit functionality)
+- 🚧 Financial reports (pending implementation with charts and PDF export)
+
+**Deacon Panel:**
+- ✅ Visitor CRUD (complete management with contact history)
+- 🚧 Diaconal help (UI exists, pending automatic expense generation)
+- 🚧 Bulletin creation (basic structure, needs full editor with sections)
+
+**LGPD Portal:**
+- 🚧 Data export (UI exists, needs real PDF/Excel/JSON generation)
+- 🚧 Requests management (UI exists, needs backend processing)
+- 🚧 Consents management (UI exists, needs persistence layer)
+
+**Infrastructure:**
 - ✅ All database schemas defined
-- ✅ Complete UI component library
+- ✅ Complete UI component library (shadcn/ui)
 - ✅ Role-based routing and layouts
-- 🚧 Seminarian management (UI exists, backend integration pending)
-- 🚧 Catechumen management (pending)
-- 🚧 Financial reports (pending)
-- 🚧 LGPD portal functionality (pending)
-- 🚧 Bulletin creation (pending)
+- ✅ Complete backend API structure
+- ✅ In-memory storage implementation

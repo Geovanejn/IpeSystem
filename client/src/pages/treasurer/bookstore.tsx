@@ -10,17 +10,37 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Trash2, Edit2, ShoppingCart } from "lucide-react";
-import { queryClient } from "@/lib/queryClient";
+import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { BookstoreSale, Member } from "@shared/schema";
 import { insertBookstoreSaleSchema } from "@shared/schema";
 
 const formSchema = insertBookstoreSaleSchema.extend({
   buyerType: z.enum(["member", "visitor"]),
   buyerMemberId: z.string().optional(),
+  buyerVisitorName: z.string().optional(),
   paymentMethod: z.enum(["dinheiro", "pix", "transferencia", "cartao", "cheque"]),
+  receiptUrl: z.string().optional(),
+}).refine((data) => {
+  if (data.buyerType === "member" && !data.buyerMemberId) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Selecione um membro quando o tipo de comprador for 'Membro'",
+  path: ["buyerMemberId"],
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -36,11 +56,12 @@ const PAYMENT_METHODS = {
 export default function TreasurerBookstorePage() {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const [buyerType, setBuyerType] = useState<"member" | "visitor">("member");
   const { toast } = useToast();
 
   const { data: sales, isLoading: salesLoading } = useQuery<BookstoreSale[]>({
-    queryKey: ["/api/bookstore"],
+    queryKey: ["/api/bookstore-sales"],
   });
 
   const { data: members, isLoading: membersLoading } = useQuery<Member[]>({
@@ -55,30 +76,22 @@ export default function TreasurerBookstorePage() {
         totalAmount: data.totalAmount,
         paymentMethod: data.paymentMethod,
         buyerMemberId: buyerType === "member" ? data.buyerMemberId : null,
-        buyerVisitorId: buyerType === "visitor" ? null : null,
+        buyerVisitorId: buyerType === "visitor" ? data.buyerVisitorName || null : null,
         date: data.date,
-        receiptUrl: "https://example.com/receipt",
+        receiptUrl: data.receiptUrl || undefined,
       };
 
       if (editingId) {
-        return await fetch(`/api/bookstore/${editingId}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        }).then(r => r.json());
+        return await apiRequest("PATCH", `/api/bookstore-sales/${editingId}`, body);
       }
-      return await fetch("/api/bookstore", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      }).then(r => r.json());
+      return await apiRequest("POST", "/api/bookstore-sales", body);
     },
     onSuccess: () => {
       toast({
         title: editingId ? "Venda atualizada" : "Venda registrada",
         description: editingId ? "A venda foi atualizada" : "Nova venda registrada",
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/bookstore"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/bookstore-sales"] });
       setOpen(false);
       setEditingId(null);
       form.reset();
@@ -95,14 +108,15 @@ export default function TreasurerBookstorePage() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      return await fetch(`/api/bookstore/${id}`, { method: "DELETE" }).then(r => r.json());
+      return await apiRequest("DELETE", `/api/bookstore-sales/${id}`);
     },
     onSuccess: () => {
       toast({
         title: "Venda deletada",
         description: "A venda foi removida",
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/bookstore"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/bookstore-sales"] });
+      setDeleteId(null);
     },
     onError: (error: any) => {
       toast({
@@ -122,7 +136,9 @@ export default function TreasurerBookstorePage() {
       paymentMethod: "dinheiro",
       buyerType: "member",
       buyerMemberId: "",
+      buyerVisitorName: "",
       date: new Date().toISOString().split("T")[0],
+      receiptUrl: "",
     },
   });
 
@@ -257,12 +273,87 @@ export default function TreasurerBookstorePage() {
                 />
                 <FormField
                   control={form.control}
+                  name="buyerType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tipo de Comprador *</FormLabel>
+                      <Select value={field.value} onValueChange={(value) => { field.onChange(value); setBuyerType(value as "member" | "visitor"); }}>
+                        <FormControl>
+                          <SelectTrigger data-testid="select-buyer-type">
+                            <SelectValue />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="member">Membro</SelectItem>
+                          <SelectItem value="visitor">Visitante</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {buyerType === "member" && (
+                  <FormField
+                    control={form.control}
+                    name="buyerMemberId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Membro *</FormLabel>
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <FormControl>
+                            <SelectTrigger data-testid="select-member">
+                              <SelectValue placeholder="Selecione o membro" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {members?.map((member) => (
+                              <SelectItem key={member.id} value={member.id}>
+                                {member.fullName}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+                {buyerType === "visitor" && (
+                  <FormField
+                    control={form.control}
+                    name="buyerVisitorName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nome do Visitante</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Nome do visitante" data-testid="input-visitor-name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+                <FormField
+                  control={form.control}
                   name="date"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Data *</FormLabel>
                       <FormControl>
                         <Input type="date" data-testid="input-date" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="receiptUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>URL do Comprovante (opcional)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="https://..." data-testid="input-receipt-url" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -350,7 +441,7 @@ export default function TreasurerBookstorePage() {
                           <Button size="icon" variant="ghost" onClick={() => handleEdit(sale)} data-testid={`button-edit-${sale.id}`}>
                             <Edit2 className="h-4 w-4" />
                           </Button>
-                          <Button size="icon" variant="ghost" onClick={() => deleteMutation.mutate(sale.id)} data-testid={`button-delete-${sale.id}`}>
+                          <Button size="icon" variant="ghost" onClick={() => setDeleteId(sale.id)} data-testid={`button-delete-${sale.id}`}>
                             <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
                         </div>
@@ -369,6 +460,27 @@ export default function TreasurerBookstorePage() {
           </div>
         </CardContent>
       </Card>
+
+      <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir esta venda? Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-delete">Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteId && deleteMutation.mutate(deleteId)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              data-testid="button-confirm-delete"
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

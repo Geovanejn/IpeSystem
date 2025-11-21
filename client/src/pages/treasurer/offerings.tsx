@@ -11,6 +11,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Trash2, Edit2, TrendingUp } from "lucide-react";
@@ -41,6 +51,7 @@ const TYPE_COLORS = {
 export default function TreasurerOfferingsPage() {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const { toast } = useToast();
 
   // Buscar ofertas
@@ -52,17 +63,9 @@ export default function TreasurerOfferingsPage() {
   const mutation = useMutation({
     mutationFn: async (data: FormData) => {
       if (editingId) {
-        return await fetch(`/api/offerings/${editingId}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        }).then(r => r.json());
+        return await apiRequest("PATCH", `/api/offerings/${editingId}`, data);
       }
-      return await fetch("/api/offerings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      }).then(r => r.json());
+      return await apiRequest("POST", "/api/offerings", data);
     },
     onSuccess: () => {
       toast({
@@ -86,7 +89,7 @@ export default function TreasurerOfferingsPage() {
   // Deletar oferta
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      return await fetch(`/api/offerings/${id}`, { method: "DELETE" }).then(r => r.json());
+      return await apiRequest("DELETE", `/api/offerings/${id}`);
     },
     onSuccess: () => {
       toast({
@@ -94,6 +97,7 @@ export default function TreasurerOfferingsPage() {
         description: "A oferta foi removida com sucesso",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/offerings"] });
+      setDeleteId(null);
     },
     onError: (error: any) => {
       toast({
@@ -342,7 +346,7 @@ export default function TreasurerOfferingsPage() {
                           <Button
                             size="icon"
                             variant="ghost"
-                            onClick={() => deleteMutation.mutate(offering.id)}
+                            onClick={() => setDeleteId(offering.id)}
                             data-testid={`button-delete-${offering.id}`}
                           >
                             <Trash2 className="h-4 w-4 text-destructive" />
@@ -363,6 +367,27 @@ export default function TreasurerOfferingsPage() {
           </div>
         </CardContent>
       </Card>
+
+      <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir esta oferta? Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-delete">Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteId && deleteMutation.mutate(deleteId)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              data-testid="button-confirm-delete"
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
