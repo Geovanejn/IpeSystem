@@ -1049,15 +1049,27 @@ Inclui telefone e email quando existir.
 
 ### Painel do Pastor
 - ✅ Dashboard com métricas
-- ✅ Página de membros com tabela
-- ✅ Busca de membros
-- ✅ Modal de cadastro de membro (estrutura)
-- ⏳ CRUD completo de membros
-- ⏳ Upload de termo LGPD
-- ⏳ Páginas de seminaristas, catecúmenos
-- ⏳ Visitantes (somente leitura)
-- ⏳ Aniversariantes automáticos
-- ⏳ Relatórios pastorais
+- ✅ Página de membros com CRUD completo
+- ✅ Página de seminaristas com CRUD completo
+- ✅ Página de catecúmenos com CRUD completo + conversão automática para membro
+- ✅ **Visitantes (Somente Leitura)** - Página completa com 331 linhas
+  - Visualização de todos os visitantes cadastrados pelo diácono
+  - Busca por nome, telefone, email
+  - Filtro por igreja (tem/sem igreja)
+  - Exibição do membro que convidou
+  - Tabela com todas as informações (contatos, endereço, observações)
+  - Alert informativo sobre permissão somente leitura
+  - Aprovado pelo Architect após correções (null safety, loading states, data-testids)
+- ✅ **Aniversariantes (Geração Automática)** - Página completa com 367 linhas
+  - Detecção automática de aniversários da semana atual
+  - Detecção automática de aniversários de casamento da semana
+  - Cálculo correto de idade e anos de casamento
+  - Suporte para virada de ano (dezembro/janeiro)
+  - Tabs separadas para aniversários de nascimento e casamento
+  - Exportação para CSV com formatação brasileira
+  - Cards com contagem total por tipo
+  - Aprovado pelo Architect após correções (virada de ano, loading, export)
+- ⏳ Relatórios pastorais completos com exportação PDF/Excel/CSV
 
 ### Painel do Tesoureiro
 - ✅ Dashboard financeiro com métricas
@@ -1147,6 +1159,138 @@ Inclui telefone e email quando existir.
 - [ ] Histórico de alterações
 - [ ] Impressão otimizada de relatórios
 - [ ] Integração com WhatsApp (notificações)
+
+---
+
+## 8.5 PÁGINAS DO PASTOR IMPLEMENTADAS EM DETALHES ✅
+
+### 📄 Página de Visitantes (Somente Leitura)
+
+**Arquivo:** `client/src/pages/pastor/visitors.tsx` (331 linhas)  
+**Status:** ✅ Concluída e aprovada pelo Architect  
+**Data:** Novembro 2024
+
+#### Funcionalidades:
+1. **Visualização Completa de Visitantes**
+   - Tabela com todos os visitantes cadastrados pelo diácono
+   - Exibição de: nome, contatos (telefone, email, endereço), igreja de origem, data da 1ª visita
+   - Mostra nome do membro que convidou o visitante
+   - Badge visual diferenciando quem tem/não tem igreja
+   - Observações do visitante (se houver)
+
+2. **Busca e Filtros**
+   - Campo de busca por: nome, telefone, email
+   - Filtro por status de igreja: todos | tem igreja | sem igreja
+   - Contador de resultados encontrados
+
+3. **Interface e UX**
+   - Alert informativo no topo explicando permissão somente leitura
+   - Mensagem instruindo acesso ao Painel do Diácono para edição
+   - Ícones lucide-react para melhor visualização (User, Phone, Mail, MapPin, Church, Calendar)
+   - Design responsivo com scroll horizontal para tabela em telas pequenas
+
+4. **Detalhes Técnicos**
+   - React Query para carregamento de visitantes e membros
+   - Loading state enquanto dados são carregados
+   - Null safety em campos opcionais (phone, email)
+   - Data-testids completos para testes automatizados
+   - Formatação de datas no padrão brasileiro (dd/MM/yyyy)
+
+5. **Correções Architect**
+   - ✅ Adicionado optional chaining em phone (`.phone?.toLowerCase()`)
+   - ✅ Loading state aguarda ambas queries (visitors + members)
+   - ✅ Data-testids em todas as células da tabela
+
+#### Fluxo de Uso:
+```
+Pastor → Sidebar "Visitantes" → Visualiza lista completa
+         → Busca por nome/telefone → Filtra por igreja
+         → Vê quem convidou cada visitante → Identifica potenciais conversões
+```
+
+---
+
+### 🎂 Página de Aniversariantes (Geração Automática)
+
+**Arquivo:** `client/src/pages/pastor/birthdays.tsx` (367 linhas)  
+**Status:** ✅ Concluída e aprovada pelo Architect  
+**Data:** Novembro 2024
+
+#### Funcionalidades:
+1. **Detecção Automática de Aniversários**
+   - Calcula automaticamente aniversários da semana atual (domingo a sábado)
+   - Identifica aniversários de nascimento de membros ativos
+   - Identifica aniversários de casamento de membros casados
+   - Cálculo correto de idade (anos completos)
+   - Cálculo correto de anos de casamento
+
+2. **Suporte para Virada de Ano**
+   - Algoritmo corrigido para semanas que cruzam dezembro/janeiro
+   - Itera pelos 7 dias da semana comparando mês e dia
+   - Não depende do ano completo para comparação
+
+3. **Tabs Organizadas**
+   - Tab "Aniversários de Nascimento": lista de aniversariantes com idade
+   - Tab "Aniversários de Casamento": lista de bodas com anos de casamento
+   - Cards com contagem total em cada tab
+   - Indicação visual de qual tab está ativa
+
+4. **Exibição de Dados**
+   - Nome completo do membro
+   - Dia da semana do aniversário (Domingo, Segunda, etc.)
+   - Data formatada em português (ex: "25 de dezembro")
+   - Idade ou anos de casamento
+   - Badge com dia da semana
+   - Ícones diferenciados (Cake para nascimento, Heart para casamento)
+
+5. **Exportação para CSV**
+   - Botão "Exportar CSV" em cada tab
+   - Formato brasileiro (ponto-e-vírgula como separador)
+   - Cabeçalhos em português
+   - Encoding UTF-8 com BOM para compatibilidade Excel
+   - Nome do arquivo com data atual (ex: `aniversarios_2024-11-21.csv`)
+
+6. **Detalhes Técnicos**
+   - React Query para carregamento de membros
+   - useMemo para otimização de cálculos
+   - Estados de loading com mensagens apropriadas
+   - Mensagem quando não há aniversariantes na semana
+   - Data-testids completos para testes
+
+7. **Correções Architect**
+   - ✅ Função `isDateInCurrentWeek` reescrita para virada de ano
+   - ✅ Itera por cada dia da semana (0 a 6) comparando mês e dia
+   - ✅ Loading states funcionando corretamente
+   - ✅ Exportação CSV implementada e funcional
+
+#### Algoritmo de Detecção:
+```typescript
+// Para cada membro ativo com birthDate:
+1. Obtém semana atual (domingo a sábado)
+2. Para cada dia da semana (i = 0 a 6):
+   - Calcula data específica: startOfWeek + i dias
+   - Compara mês e dia com birthDate do membro
+   - Se coincidir, adiciona à lista
+3. Ordena por data (mais próximo primeiro)
+4. Calcula idade: currentYear - birthYear (ajusta se ainda não fez aniversário)
+```
+
+#### Fluxo de Uso:
+```
+Pastor → Sidebar "Aniversariantes"
+         → Tab "Aniversários de Nascimento"
+            → Vê lista da semana com idades
+            → Exporta CSV para enviar ao boletim
+         → Tab "Aniversários de Casamento"
+            → Vê lista de bodas da semana
+            → Exporta CSV se necessário
+```
+
+#### Casos de Uso:
+- **Boletim Dominical**: Exportar lista para incluir no boletim
+- **Planejamento Pastoral**: Identificar aniversariantes para contato/visita
+- **Celebrações**: Preparar homenagens em cultos
+- **Comunicação**: Enviar mensagens de parabéns personalizadas
 
 ---
 

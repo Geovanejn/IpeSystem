@@ -79,7 +79,46 @@
 - **Aprovado pelo Architect após 3 ciclos de correção**
 - **Correções implementadas:** useEffect para auto-popular professorId, campo disabled, reset com professorId preservado
 
-### 6. ✅ Gestão de Dízimos (Painel do Tesoureiro)
+### 6. ✅ Visitantes - Visualização Somente Leitura (Painel do Pastor)
+**Status:** Completo e Operacional (Implementado em 21/11/2025)
+
+**Funcionalidades:**
+- Visualização completa de todos os visitantes cadastrados pelo diácono
+- Tabela com nome, contatos (telefone, email, endereço), igreja de origem, 1ª visita
+- **Exibe nome do membro que convidou** cada visitante
+- Busca por nome, telefone, email
+- Filtro por igreja: todos | tem igreja | sem igreja
+- Badge visual diferenciando status de igreja
+- Alert informativo sobre permissão somente leitura
+- Interface em `/pastor/visitors`
+- **331 linhas de código**
+- **Aprovado pelo Architect após correções:**
+  - ✅ Null safety em campos opcionais (phone, email)
+  - ✅ Loading states para visitors + members
+  - ✅ Data-testids completos para testes
+
+### 7. ✅ Aniversariantes - Geração Automática (Painel do Pastor)
+**Status:** Completo e Operacional (Implementado em 21/11/2025)
+
+**Funcionalidades:**
+- **Detecção automática de aniversários da semana atual** (domingo a sábado)
+- Aniversários de nascimento de membros ativos
+- Aniversários de casamento de membros casados
+- Cálculo correto de idade e anos de casamento
+- **Suporte para virada de ano (dezembro/janeiro)** - algoritmo corrigido
+- Tabs separadas: "Aniversários de Nascimento" e "Aniversários de Casamento"
+- Cards com contagem total por tipo
+- **Exportação para CSV** com formatação brasileira (UTF-8 BOM, ponto-e-vírgula)
+- Exibição: nome, dia da semana, data formatada, idade/anos
+- Interface em `/pastor/birthdays`
+- **367 linhas de código**
+- **Aprovado pelo Architect após correções:**
+  - ✅ Função `isDateInCurrentWeek` reescrita para virada de ano
+  - ✅ Itera pelos 7 dias da semana comparando mês e dia
+  - ✅ Loading states funcionando corretamente
+  - ✅ Exportação CSV implementada e funcional
+
+### 8. ✅ Gestão de Dízimos (Painel do Tesoureiro)
 **Status:** Básico Implementado
 
 **Funcionalidades:**
@@ -88,14 +127,14 @@
 - Vinculação com membros
 - Interface em `/treasurer/tithes`
 
-### 7. ✅ Visitantes (Painel do Diácono)
+### 9. ✅ Visitantes - CRUD Completo (Painel do Diácono)
 **Status:** Básico Implementado
 
 **Funcionalidades:**
 - Listagem de visitantes
 - Interface em `/deacon/visitors`
 
-### 8. ✅ Dashboards
+### 10. ✅ Dashboards
 **Status:** Básicos Implementados
 
 - Dashboard do Pastor (`/pastor`)
@@ -103,7 +142,7 @@
 - Dashboard do Diácono (`/deacon`)
 - Dashboard LGPD (`/lgpd`)
 
-### 9. ✅ Sistema de Audit Logs
+### 11. ✅ Sistema de Audit Logs
 **Status:** Completo e Funcionando
 
 **Funcionalidades:**
@@ -112,7 +151,7 @@
 - Rastreamento total: quem fez, o quê, quando, dados antes/depois
 - Compliance LGPD
 
-### 10. ✅ Infraestrutura
+### 12. ✅ Infraestrutura
 **Status:** Completo
 
 - Banco de dados PostgreSQL configurado
@@ -126,34 +165,34 @@
 
 ## 📋 PRÓXIMOS MÓDULOS A IMPLEMENTAR
 
-### Prioridade 1: Visitantes (Leitura no Painel do Pastor)
+### 🔵 Painel do Pastor - Próximas Funcionalidades
+
+### Prioridade 1: Relatórios Pastorais
 **Status:** ⏳ Pendente
 
 **Especificações:**
-- Visualização somente leitura (CRUD completo fica no Diácono)
-- Ver histórico de visitas
-- Ver quem convidou
-- Ver igreja de origem
+- Membros por cargo (Membro, Presbítero, Diácono, Pastor, Seminarista)
+- Membros por status (Ativo, Inativo, Transferido, Em Disciplina)
+- Comungantes vs. Não comungantes
+- Seminaristas por status (Ativo, Em estágio, Concluído)
+- Catecúmenos por etapa (Em andamento, Apto, Concluído)
+- Visitantes por origem (Com igreja, Sem igreja)
+- **Exportação múltipla:** PDF, Excel, CSV
+- Gráficos visuais com Recharts
+- Filtros por período (mensal, trimestral, anual)
 
-### Prioridade 2: Aniversariantes (Painel do Pastor)
+### Prioridade 2: Dashboard do Pastor Aprimorado
 **Status:** ⏳ Pendente
 
 **Especificações:**
-- Geração automática baseada em data nascimento
-- Aniversariantes da semana
-- Aniversários de casamento
-- Exportação para boletim
-
-### Prioridade 3: Relatórios Pastorais
-**Status:** ⏳ Pendente
-
-**Especificações:**
-- Membros por cargo
-- Membros por status
-- Comungantes/não comungantes
-- Seminaristas por status
-- Catecúmenos por etapa
-- Exportação: PDF, Excel, CSV
+- Cards com métricas reais do banco de dados
+- Total de membros ativos vs. inativos
+- Total de seminaristas por status
+- Total de catecúmenos por etapa
+- Total de visitantes da semana/mês
+- Aniversariantes da semana (preview)
+- Gráficos de crescimento
+- Ações rápidas (Novo membro, Novo catecúmeno, etc.)
 
 ---
 
