@@ -224,7 +224,7 @@ export default function DeaconVisitorsCRUD() {
                       <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input type="email" placeholder="email@exemplo.com" data-testid="input-email" {...field} />
+                          <Input type="email" placeholder="email@exemplo.com" data-testid="input-email" value={field.value || ""} onChange={field.onChange} onBlur={field.onBlur} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -238,7 +238,7 @@ export default function DeaconVisitorsCRUD() {
                     <FormItem>
                       <FormLabel>Endereço</FormLabel>
                       <FormControl>
-                        <Input placeholder="Rua, número, bairro, CEP" data-testid="input-address" {...field} />
+                        <Input placeholder="Rua, número, bairro, CEP" data-testid="input-address" value={field.value || ""} onChange={field.onChange} onBlur={field.onBlur} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

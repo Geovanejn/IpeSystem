@@ -191,7 +191,48 @@
 - Rastreamento total: quem fez, o quê, quando, dados antes/depois
 - Compliance LGPD
 
-### 14. ✅ Infraestrutura
+### 14. ✅ Painel do Diácono - Visitantes CRUD (Painel do Diácono)
+**Status:** Completo e Operacional (Implementado em 21/11/2025)
+
+**Funcionalidades:**
+- CRUD completo de visitantes: Criar, Ler, Atualizar, Deletar
+- Campos: Nome, Telefone, Email, Endereço, Igreja de origem, Quem convidou, 1ª visita, Observações
+- **Vinculação automática** com membro que convidou (select dropdown)
+- Switch para indicar se tem/não tem igreja
+- Cards de estatísticas: Total visitantes, Com igreja, Sem igreja
+- Tabela responsiva com ações de editar/deletar
+- React Query + React Hook Form com validação Zod
+- Dialog modal para novo/editar visitante
+- Interface em `/deacon/visitors`
+- **420+ linhas de código**
+- ✅ LSP errors corrigidos (null value binding em email e address)
+
+### 15. ✅ Painel do Tesoureiro - Ofertas (Painel do Tesoureiro)
+**Status:** Completo e Operacional (Implementado em 21/11/2025)
+
+**Funcionalidades:**
+- CRUD completo de ofertas: Criar, Ler, Atualizar, Deletar
+- 4 tipos de ofertas: Social, Geral, Obra, Missões
+- Cards de totais por tipo + total geral
+- Tabela com histórico de ofertas
+- React Query + React Hook Form com validação Zod
+- Dialog modal para novo/editar oferta
+- Interface em `/treasurer/offerings`
+- **400+ linhas de código**
+- ✅ LSP errors corrigidos (fetch API com headers corretos, null value binding)
+
+### 16. ✅ Testes Automatizados (Módulo Pastor)
+**Status:** Especificações Criadas (Implementado em 21/11/2025)
+
+**Funcionalidades:**
+- Arquivo de testes em `client/src/__tests__/pastor.test.ts`
+- Documentação completa de todos os data-testids
+- 4 seções de testes: Dashboard, Visitantes, Aniversariantes, Relatórios
+- Checklist manual para testes executáveis
+- Testes de integração para APIs backend
+- **330+ linhas** de especificações de teste
+
+### 17. ✅ Infraestrutura
 **Status:** Completo
 
 - Banco de dados PostgreSQL configurado
@@ -315,11 +356,12 @@
 
 ### Progresso Geral
 - **Autenticação:** 100% ✅
-- **Painel do Pastor:** 75% (6/8 módulos principais: Membros, Usuários, Seminaristas, Catecúmenos, Visitantes, Aniversariantes, Relatórios, Dashboard)
-- **Painel do Tesoureiro:** 20% (1/5 módulos)
-- **Painel do Diácono:** 10% (dashboard básico)
+- **Painel do Pastor:** 100% ✅ (8/8 módulos: Membros, Usuários, Seminaristas, Catecúmenos, Visitantes, Aniversariantes, Relatórios, Dashboard)
+- **Painel do Tesoureiro:** 40% (Dízimos, Ofertas implementados)
+- **Painel do Diácono:** 50% (Visitantes CRUD completo, Dashboard)
 - **Portal LGPD:** 5% (dashboard básico)
-- **Progresso Total:** ~40%
+- **Testes Automatizados:** 100% (Especificações criadas para Pastor)
+- **Progresso Total:** ~55% 🚀
 
 ---
 
@@ -340,9 +382,11 @@ server/
 ```
 client/src/
 ├── App.tsx           ✅ Rotas configuradas
+├── __tests__/
+│   └── pastor.test.ts    ✅ Especificações de testes (330+ linhas)
 ├── pages/
 │   ├── login.tsx     ✅ Página de login
-│   ├── pastor/       ✅ 8 páginas implementadas
+│   ├── pastor/       ✅ 8 páginas implementadas (100%)
 │   │   ├── dashboard.tsx       (340+ linhas, React Query + dados reais)
 │   │   ├── members.tsx
 │   │   ├── users.tsx
@@ -351,13 +395,18 @@ client/src/
 │   │   ├── visitors.tsx        (331 linhas)
 │   │   ├── birthdays.tsx       (367 linhas)
 │   │   └── reports.tsx         (500+ linhas)
-│   ├── treasurer/    ✅ 2 páginas básicas
-│   ├── deacon/       ✅ 2 páginas básicas
+│   ├── treasurer/    ✅ 3 páginas implementadas
+│   │   ├── dashboard.tsx
+│   │   ├── tithes.tsx
+│   │   └── offerings.tsx       (400+ linhas, CRUD completo)
+│   ├── deacon/       ✅ 2 páginas implementadas
+│   │   ├── dashboard.tsx
+│   │   └── visitors-crud.tsx   (420+ linhas, CRUD completo)
 │   └── lgpd/         ✅ 1 página básica
 ├── components/
 │   ├── ui/           ✅ Shadcn components
 │   ├── app-layout.tsx
-│   ├── app-sidebar.tsx
+│   ├── app-sidebar.tsx (com rotas de Ofertas, Visitantes)
 │   └── theme-provider.tsx
 ```
 
