@@ -309,12 +309,59 @@ router.put("/members/:id", requireRole("pastor"), async (req, res) => {
 });
 
 /**
+ * PATCH /api/members/:id
+ * Atualiza membro (alias para PUT)
+ */
+router.patch("/members/:id", requireRole("pastor"), async (req, res) => {
+  try {
+    const session = (req as any).session;
+    const validated = insertMemberSchema.partial().parse(req.body);
+    
+    const memberBefore = await storage.getMember(req.params.id);
+    
+    if (!memberBefore) {
+      return res.status(404).json({ error: "Member not found" });
+    }
+    
+    const member = await storage.updateMember(req.params.id, validated);
+    
+    if (!member) {
+      return res.status(404).json({ error: "Member not found" });
+    }
+    
+    // Create audit log
+    await storage.createAuditLog({
+      userId: session.userId,
+      action: "UPDATE",
+      tableName: "members",
+      recordId: member.id,
+      changesBefore: JSON.stringify(memberBefore),
+      changesAfter: JSON.stringify(member),
+    });
+    
+    res.json(member);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ error: error.errors });
+    }
+    res.status(500).json({ error: "Failed to update member" });
+  }
+});
+
+/**
  * DELETE /api/members/:id
  * Remove membro
  */
 router.delete("/members/:id", requireRole("pastor"), async (req, res) => {
   try {
     const session = (req as any).session;
+    
+    const memberBefore = await storage.getMember(req.params.id);
+    
+    if (!memberBefore) {
+      return res.status(404).json({ error: "Member not found" });
+    }
+    
     const success = await storage.deleteMember(req.params.id);
     
     if (!success) {
@@ -327,6 +374,7 @@ router.delete("/members/:id", requireRole("pastor"), async (req, res) => {
       action: "DELETE",
       tableName: "members",
       recordId: req.params.id,
+      changesBefore: JSON.stringify(memberBefore),
     });
     
     res.status(204).send();
