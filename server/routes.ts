@@ -806,7 +806,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             description: `Parcela ${i}/${loan.installments} - ${loan.creditorName}`,
             amount: loan.installmentAmount,
             date: installmentDate.toISOString().split('T')[0],
-            receiptUrl: loan.receiptUrl || undefined,
+            receiptUrl: loan.receiptUrl || "",
             loanId: loan.id,
             installmentNumber: i,
           });
@@ -954,20 +954,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const validated = insertDiaconalHelpSchema.parse(req.body);
       
-      // Criar expense automaticamente
-      const expense = await storage.createExpense({
-        category: "ajuda_diaconal",
-        description: validated.description,
-        amount: validated.amount,
-        date: validated.date,
-        receiptUrl: validated.receiptUrl,
-      });
-      
-      // Criar ajuda diaconal vinculada à expense
-      const help = await storage.createDiaconalHelp({
-        ...validated,
-        expenseId: expense.id,
-      });
+      // Criar ajuda diaconal
+      const help = await storage.createDiaconalHelp(validated);
       
       res.status(201).json(help);
     } catch (error) {
@@ -1302,16 +1290,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           personalInfo: {
             name: visitor.fullName,
             email: visitor.email || "",
-            phone: visitor.primaryPhone,
+            phone: visitor.phone,
             cpf: "",
-            address: "",
+            address: visitor.address || "",
             birthDate: "",
             maritalStatus: "",
           },
           churchInfo: {
             membershipType: "Visitante",
             firstVisitDate: visitor.firstVisitDate,
-            lastVisitDate: visitor.lastVisitDate,
           },
           lgpdInfo: {
             totalRequests: lgpdRequests.length,
@@ -1401,26 +1388,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
           notes: t.notes,
         }));
         
-        // Financial data - Offerings
+        // Financial data - Offerings (not linked to members in current schema)
         const allOfferings = await storage.getOfferings();
-        const memberOfferings = allOfferings.filter(o => o.memberId === member.id);
-        exportData.offerings = memberOfferings.map(o => ({
+        exportData.offerings = allOfferings.map(o => ({
           amount: o.amount,
           date: o.date,
           type: o.type,
-          paymentMethod: o.paymentMethod,
           notes: o.notes,
         }));
         
         // Bookstore purchases
         const allBookstoreSales = await storage.getBookstoreSales();
-        const memberBookstoreSales = allBookstoreSales.filter(s => s.memberId === member.id);
+        const memberBookstoreSales = allBookstoreSales.filter(s => s.buyerMemberId === member.id);
         exportData.bookstoreSales = memberBookstoreSales.map(s => ({
           productName: s.productName,
           quantity: s.quantity,
-          unitPrice: s.unitPrice,
-          totalPrice: s.totalPrice,
-          saleDate: s.saleDate,
+          totalAmount: s.totalAmount,
+          date: s.date,
           paymentMethod: s.paymentMethod,
         }));
         
@@ -1437,11 +1421,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // LGPD Consents
         const lgpdConsents = await storage.getLgpdConsents(member.id);
         exportData.lgpdConsents = lgpdConsents.map(c => ({
-          consentType: c.consentType,
-          purpose: c.purpose,
-          granted: c.granted,
-          grantedAt: c.grantedAt,
-          revokedAt: c.revokedAt,
+          consentGiven: c.consentGiven,
+          consentDate: c.consentDate,
+          revokedDate: c.revokedDate,
+          documentUrl: c.documentUrl,
         }));
       } else if (visitor) {
         // Personal data from visitors table
@@ -1470,11 +1453,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // LGPD Consents
         const lgpdConsents = await storage.getLgpdConsents(undefined, visitor.id);
         exportData.lgpdConsents = lgpdConsents.map(c => ({
-          consentType: c.consentType,
-          purpose: c.purpose,
-          granted: c.granted,
-          grantedAt: c.grantedAt,
-          revokedAt: c.revokedAt,
+          consentGiven: c.consentGiven,
+          consentDate: c.consentDate,
+          revokedDate: c.revokedDate,
+          documentUrl: c.documentUrl,
         }));
       }
       
