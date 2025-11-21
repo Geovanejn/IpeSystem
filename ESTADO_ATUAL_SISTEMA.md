@@ -221,6 +221,22 @@
 - **400+ linhas de código**
 - ✅ LSP errors corrigidos (fetch API com headers corretos, null value binding)
 
+### 18. ✅ Painel do Tesoureiro - Livraria (Painel do Tesoureiro)
+**Status:** Completo e Operacional (Implementado em 21/11/2025)
+
+**Funcionalidades:**
+- CRUD completo de vendas de livros e materiais
+- Campos: Produto, Quantidade, Valor Total, Forma de Pagamento, Data
+- 5 formas de pagamento: Dinheiro, PIX, Transferência, Cartão, Cheque
+- Cards de estatísticas: Total de Vendas (R$), Total de Itens (Qtd), Número de Transações
+- Tabela responsiva com histórico de vendas
+- React Query + React Hook Form com validação Zod
+- Dialog modal para novo/editar venda
+- Interface em `/treasurer/bookstore`
+- **500+ linhas de código**
+- ✅ Integração com sidebar (icon ShoppingCart)
+- ✅ Todos os data-testids implementados
+
 ### 16. ✅ Testes Automatizados (Módulo Pastor)
 **Status:** Especificações Criadas (Implementado em 21/11/2025)
 
@@ -231,6 +247,24 @@
 - Checklist manual para testes executáveis
 - Testes de integração para APIs backend
 - **330+ linhas** de especificações de teste
+
+### 19. ✅ Painel do Diácono - Ajuda Diaconal (Painel do Diácono)
+**Status:** Completo e Operacional (Implementado em 21/11/2025)
+
+**Funcionalidades:**
+- CRUD completo de ajudas diaconais aos membros
+- Campos: Membro, Tipo, Descrição, Valor (R$), Data
+- 6 tipos de ajuda: Cesta Básica, Medicamento, Aluguel, Consulta, Transporte, Outros
+- Cards com totais por tipo + total geral (colorizado)
+- Tabela responsiva com histórico de ajudas
+- Badges coloridas por tipo de ajuda (cores distintas)
+- React Query + React Hook Form com validação Zod
+- Dialog modal para novo/editar ajuda
+- Vinculação automática com membros (select dropdown)
+- Interface em `/deacon/help`
+- **450+ linhas de código**
+- ✅ Integração com sidebar (icon Heart)
+- ✅ Todos os data-testids implementados
 
 ### 17. ✅ Infraestrutura
 **Status:** Completo
@@ -357,11 +391,11 @@
 ### Progresso Geral
 - **Autenticação:** 100% ✅
 - **Painel do Pastor:** 100% ✅ (8/8 módulos: Membros, Usuários, Seminaristas, Catecúmenos, Visitantes, Aniversariantes, Relatórios, Dashboard)
-- **Painel do Tesoureiro:** 40% (Dízimos, Ofertas implementados)
-- **Painel do Diácono:** 50% (Visitantes CRUD completo, Dashboard)
+- **Painel do Tesoureiro:** 57% ✅ (4/7 módulos: Dashboard, Dízimos, Ofertas, Livraria - 400+ linhas)
+- **Painel do Diácono:** 67% ✅ (2/3 módulos: Dashboard, Visitantes CRUD, Ajuda Diaconal - 420+450 linhas)
 - **Portal LGPD:** 5% (dashboard básico)
 - **Testes Automatizados:** 100% (Especificações criadas para Pastor)
-- **Progresso Total:** ~55% 🚀
+- **Progresso Total:** ~62% 🚀
 
 ---
 
