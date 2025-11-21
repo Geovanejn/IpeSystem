@@ -25,7 +25,7 @@ export default function LGPDDashboard() {
       </Alert>
 
       <div className="grid gap-6 grid-cols-1 md:grid-cols-3">
-        <Card className="hover-elevate transition-all cursor-pointer">
+        <Card className="hover-elevate transition-all cursor-pointer" onClick={() => navigate("/lgpd/my-data")}>
           <CardHeader>
             <CardTitle className="flex items-center gap-3">
               <FileText className="h-5 w-5 text-primary" />

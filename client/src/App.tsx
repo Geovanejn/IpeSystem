@@ -35,6 +35,7 @@ import DeaconBulletin from "@/pages/deacon/bulletin";
 
 // LGPD Pages
 import LGPDDashboard from "@/pages/lgpd/dashboard";
+import LGPDMyData from "@/pages/lgpd/my-data";
 import LGPDExport from "@/pages/lgpd/export";
 import LGPDRequests from "@/pages/lgpd/requests";
 import LGPDConsents from "@/pages/lgpd/consents";
@@ -197,6 +198,13 @@ function Router() {
         {() => (
           <AppLayout role="member" userName="Membro Carlos Costa">
             <LGPDDashboard />
+          </AppLayout>
+        )}
+      </Route>
+      <Route path="/lgpd/my-data">
+        {() => (
+          <AppLayout role="member" userName="Membro Carlos Costa">
+            <LGPDMyData />
           </AppLayout>
         )}
       </Route>

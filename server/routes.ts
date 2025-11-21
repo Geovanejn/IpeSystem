@@ -1210,6 +1210,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // LGPD My Data endpoint - Get user's personal data summary
+  app.get("/api/lgpd/my-data", async (req, res) => {
+    try {
+      // TODO CRITICAL SECURITY: This endpoint MUST use authenticated session in production
+      // Currently using mock authentication (returns first member) - this is a SECURITY RISK
+      // In production, replace with: const memberId = req.session?.user?.memberId
+      // and verify authentication before allowing access to personal data
+      const members = await storage.getMembers();
+      const member = members[0]; // Mock: get first member - MUST be replaced with auth
+      
+      if (!member) {
+        return res.status(404).json({ error: "Usuário não encontrado" });
+      }
+      
+      // Get financial data
+      const allTithes = await storage.getTithes();
+      const memberTithes = allTithes.filter(t => t.memberId === member.id);
+      
+      const totalTithes = memberTithes.reduce((sum, t) => sum + parseFloat(t.amount), 0);
+      
+      // Get LGPD data
+      const lgpdRequests = await storage.getLgpdRequests(member.id);
+      const lgpdConsents = await storage.getLgpdConsents(member.id);
+      const activeConsents = lgpdConsents.filter(c => c.consentGiven && !c.revokedDate).length;
+      
+      // Get last tithe date
+      const lastTithe = memberTithes.sort((a, b) => 
+        new Date(b.date).getTime() - new Date(a.date).getTime()
+      )[0];
+      
+      // Build response
+      const userData = {
+        personalInfo: {
+          name: member.fullName,
+          email: member.email,
+          phone: member.primaryPhone,
+          cpf: "123.456.789-00", // Mock CPF - would come from member table in production
+          address: `${member.address}, ${member.addressNumber}${member.addressComplement ? `, ${member.addressComplement}` : ''} - ${member.neighborhood}, ${member.zipCode}`,
+          birthDate: member.birthDate,
+          maritalStatus: member.maritalStatus,
+        },
+        churchInfo: {
+          membershipType: member.memberStatus,
+          admissionDate: member.admissionDate,
+          communionStatus: member.communionStatus,
+          officePosition: member.ecclesiasticalRole !== "membro" ? member.ecclesiasticalRole : undefined,
+          departments: [], // Would come from a departments table in production
+        },
+        financialInfo: {
+          totalTithes,
+          totalOfferings: 0, // Offerings are not per-member in the current schema
+          lastTitheDate: lastTithe?.date,
+          lastOfferingDate: undefined,
+        },
+        lgpdInfo: {
+          consentDate: member.admissionDate, // Using admission as consent date
+          consentUrl: member.lgpdConsentUrl,
+          activeConsents,
+          totalRequests: lgpdRequests.length,
+        },
+      };
+      
+      res.json(userData);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      res.status(500).json({ error: "Failed to fetch user data" });
+    }
+  });
+
   // Legacy LGPD routes for backward compatibility
   app.get("/api/lgpd/consents", async (req, res) => {
     req.url = "/api/lgpd-consents";
