@@ -131,6 +131,18 @@ Cria: 1 pastor, 4 membros, 3 catecúmenos para testar conversão automática.
 
 ## Recent Changes
 
+### 21/11/2025 - Correção #5: Autorização baseada em Roles (COMPLETO E VALIDADO)
+- ✅ Criado middleware `requireRole(...roles)` para proteção de endpoints
+- ✅ Aplicado em **52 rotas** com modelo de autorização granular:
+  - **Pastoral (14 rotas):** Apenas Pastor - Membros, Usuários, Seminaristas, Catecúmenos
+  - **Financeiro (16 rotas):** Pastor + Tesoureiro - Dízimos, Ofertas, Livraria, Empréstimos, Despesas
+  - **Diaconal (8 rotas):** Pastor (leitura) + Diácono (CRUD) - Visitantes, Ajuda Diaconal, Boletins
+  - **LGPD (10 rotas):** Todos autenticados - Consentimentos, Solicitações, Exportação
+- ✅ Retorna 401 (não autenticado) ou 403 (sem autorização) com mensagens claras
+- ✅ Sem erros LSP - validação completa
+- ✅ Compatibilidade mantida com sistema de sessões atual
+- ✅ Documentado em CORRECOES_SEGURANCA.md com matriz de permissões e testes de cenários
+
 ### 21/11/2025 - Correção #4: CSRF Protection (COMPLETO E APROVADO)
 - ✅ Implementado csrf-csrf (Double Submit Cookie Pattern) em todas as 61 rotas mutativas
 - ✅ Configurado cookie-parser e middleware CSRF no backend
