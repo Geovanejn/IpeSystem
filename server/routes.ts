@@ -429,7 +429,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // MEMBERS ROUTES (Pastor)
   // ============================================
   
-  app.get("/api/members", async (req, res) => {
+  app.get("/api/members", requireRole("pastor"), async (req, res) => {
     try {
       res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
       res.setHeader("Pragma", "no-cache");
@@ -441,7 +441,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/members/:id", async (req, res) => {
+  app.get("/api/members/:id", requireRole("pastor"), async (req, res) => {
     try {
       const member = await storage.getMember(req.params.id);
       if (!member) {
@@ -453,14 +453,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/members", async (req, res) => {
+  app.post("/api/members", requireRole("pastor"), async (req, res) => {
     try {
+      const session = (req as any).session;
       const validated = insertMemberSchema.parse(req.body);
       const member = await storage.createMember(validated);
       
       // Create audit log
       await storage.createAuditLog({
-        userId: "system", // TODO: usar userId real da sessão
+        userId: session.userId,
         action: "CREATE",
         tableName: "members",
         recordId: member.id,
@@ -476,8 +477,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/members/:id", async (req, res) => {
+  app.put("/api/members/:id", requireRole("pastor"), async (req, res) => {
     try {
+      const session = (req as any).session;
       const validated = insertMemberSchema.partial().parse(req.body);
       const member = await storage.updateMember(req.params.id, validated);
       
@@ -487,7 +489,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create audit log
       await storage.createAuditLog({
-        userId: "system",
+        userId: session.userId,
         action: "UPDATE",
         tableName: "members",
         recordId: member.id,
@@ -503,8 +505,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/members/:id", async (req, res) => {
+  app.patch("/api/members/:id", requireRole("pastor"), async (req, res) => {
     try {
+      const session = (req as any).session;
       const validated = insertMemberSchema.partial().parse(req.body);
       const member = await storage.updateMember(req.params.id, validated);
       
@@ -514,7 +517,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create audit log
       await storage.createAuditLog({
-        userId: "system",
+        userId: session.userId,
         action: "UPDATE",
         tableName: "members",
         recordId: member.id,
@@ -530,8 +533,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/members/:id", async (req, res) => {
+  app.delete("/api/members/:id", requireRole("pastor"), async (req, res) => {
     try {
+      const session = (req as any).session;
       const success = await storage.deleteMember(req.params.id);
       
       if (!success) {
@@ -540,7 +544,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create audit log
       await storage.createAuditLog({
-        userId: "system",
+        userId: session.userId,
         action: "DELETE",
         tableName: "members",
         recordId: req.params.id,
