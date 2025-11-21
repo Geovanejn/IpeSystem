@@ -364,6 +364,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.patch("/api/members/:id", async (req, res) => {
+    try {
+      const validated = insertMemberSchema.partial().parse(req.body);
+      const member = await storage.updateMember(req.params.id, validated);
+      
+      if (!member) {
+        return res.status(404).json({ error: "Member not found" });
+      }
+      
+      // Create audit log
+      await storage.createAuditLog({
+        userId: "system",
+        action: "UPDATE",
+        tableName: "members",
+        recordId: member.id,
+        changesAfter: JSON.stringify(member),
+      });
+      
+      res.json(member);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      res.status(500).json({ error: "Failed to update member" });
+    }
+  });
+
   app.delete("/api/members/:id", async (req, res) => {
     try {
       const success = await storage.deleteMember(req.params.id);

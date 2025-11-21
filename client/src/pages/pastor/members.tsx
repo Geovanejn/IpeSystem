@@ -1,9 +1,22 @@
 import { useState } from "react";
 import { Plus, Search, Edit, Trash2, Eye } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { 
   Table, 
   TableBody, 
@@ -16,6 +29,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { Member } from "@shared/schema";
+import { insertMemberSchema } from "@shared/schema";
 import {
   Dialog,
   DialogContent,
@@ -37,13 +51,30 @@ const communionColors: Record<string, string> = {
   "nao_comungante": "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300",
 };
 
+const updateMemberSchema = insertMemberSchema.partial().extend({
+  id: z.string(),
+});
+
+type UpdateMemberFormValues = z.infer<typeof updateMemberSchema>;
+
 export default function PastorMembers() {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   // Buscar membros da API
   const { data: members = [], isLoading } = useQuery<Member[]>({
     queryKey: ["/api/members"],
+  });
+
+  // Formulário de edição
+  const editForm = useForm<UpdateMemberFormValues>({
+    resolver: zodResolver(updateMemberSchema),
+    defaultValues: {
+      memberStatus: "ativo",
+      communionStatus: "nao_comungante",
+    },
   });
 
   // Filtrar membros baseado na busca
@@ -51,6 +82,31 @@ export default function PastorMembers() {
     member.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
     member.email?.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Mutation para editar membro
+  const editMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: Partial<Member> }) => {
+      const response = await apiRequest("PATCH", `/api/members/${id}`, data);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/members"], refetchType: 'all' });
+      toast({
+        title: "Membro atualizado",
+        description: "Os dados do membro foram atualizados com sucesso.",
+      });
+      setEditDialogOpen(false);
+      setSelectedMember(null);
+      editForm.reset();
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Erro ao atualizar membro",
+        description: error.message || "Ocorreu um erro ao atualizar o membro.",
+        variant: "destructive",
+      });
+    },
+  });
 
   // Mutation para deletar membro
   const deleteMutation = useMutation({
@@ -72,6 +128,25 @@ export default function PastorMembers() {
       });
     },
   });
+
+  const handleEditClick = (member: Member) => {
+    setSelectedMember(member);
+    editForm.reset({
+      fullName: member.fullName,
+      email: member.email,
+      primaryPhone: member.primaryPhone,
+      memberStatus: member.memberStatus,
+      communionStatus: member.communionStatus,
+      pastoralNotes: member.pastoralNotes || "",
+      id: member.id,
+    });
+    setEditDialogOpen(true);
+  };
+
+  const onEditSubmit = (data: UpdateMemberFormValues) => {
+    if (!selectedMember) return;
+    editMutation.mutate({ id: selectedMember.id, data });
+  };
 
   if (isLoading) {
     return (
@@ -182,13 +257,7 @@ export default function PastorMembers() {
                           <Button 
                             variant="ghost" 
                             size="icon"
-                            data-testid={`button-view-${member.id}`}
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="icon"
+                            onClick={() => handleEditClick(member)}
                             data-testid={`button-edit-${member.id}`}
                           >
                             <Edit className="h-4 w-4" />
@@ -218,6 +287,150 @@ export default function PastorMembers() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Dialog de Edição */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Editar Membro</DialogTitle>
+            <DialogDescription>
+              Atualize os dados do membro {selectedMember?.fullName}
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...editForm}>
+            <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
+              <FormField
+                control={editForm.control}
+                name="fullName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nome Completo</FormLabel>
+                    <FormControl>
+                      <Input {...field} value={field.value || ""} data-testid="input-edit-fullname" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={editForm.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input type="email" {...field} value={field.value || ""} data-testid="input-edit-email" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={editForm.control}
+                name="primaryPhone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Telefone</FormLabel>
+                    <FormControl>
+                      <Input {...field} value={field.value || ""} data-testid="input-edit-phone" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={editForm.control}
+                  name="communionStatus"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Situação (Comunhão)</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value || ""}>
+                        <FormControl>
+                          <SelectTrigger data-testid="select-communion-status">
+                            <SelectValue placeholder="Selecione" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="comungante">Comungante</SelectItem>
+                          <SelectItem value="nao_comungante">Não Comungante</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={editForm.control}
+                  name="memberStatus"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Status Administrativo</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value || ""}>
+                        <FormControl>
+                          <SelectTrigger data-testid="select-member-status">
+                            <SelectValue placeholder="Selecione" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="ativo">Ativo</SelectItem>
+                          <SelectItem value="inativo">Inativo</SelectItem>
+                          <SelectItem value="transferido">Transferido</SelectItem>
+                          <SelectItem value="em_disciplina">Em Disciplina</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={editForm.control}
+                name="pastoralNotes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Observações Pastorais</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Anotações do pastor sobre o membro"
+                        {...field}
+                        value={field.value || ""}
+                        data-testid="input-edit-pastoral-notes"
+                        className="resize-none"
+                        rows={4}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex justify-end gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setEditDialogOpen(false)}
+                  data-testid="button-cancel-edit"
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={editMutation.isPending}
+                  data-testid="button-submit-edit"
+                >
+                  {editMutation.isPending ? "Salvando..." : "Salvar"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
