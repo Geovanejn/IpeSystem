@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -7,40 +8,51 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/contexts/auth-context";
 import { ProtectedRoute } from "@/components/protected-route";
 import { AppLayout } from "@/components/app-layout";
+
+// Loading fallback component
+function PageLoader() {
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+    </div>
+  );
+}
+
+// Public Pages - Loaded immediately
 import NotFound from "@/pages/not-found";
 import Login from "@/pages/login";
 
-// Pastor Pages
-import PastorDashboard from "@/pages/pastor/dashboard";
-import PastorMembers from "@/pages/pastor/members";
-import PastorUsers from "@/pages/pastor/users";
-import PastorSeminarians from "@/pages/pastor/seminarians";
-import PastorCatechumens from "@/pages/pastor/catechumens";
-import PastorVisitors from "@/pages/pastor/visitors";
-import PastorBirthdays from "@/pages/pastor/birthdays";
-import PastorReports from "@/pages/pastor/reports";
+// Pastor Pages - Lazy loaded
+const PastorDashboard = lazy(() => import("@/pages/pastor/dashboard"));
+const PastorMembers = lazy(() => import("@/pages/pastor/members"));
+const PastorUsers = lazy(() => import("@/pages/pastor/users"));
+const PastorSeminarians = lazy(() => import("@/pages/pastor/seminarians"));
+const PastorCatechumens = lazy(() => import("@/pages/pastor/catechumens"));
+const PastorVisitors = lazy(() => import("@/pages/pastor/visitors"));
+const PastorBirthdays = lazy(() => import("@/pages/pastor/birthdays"));
+const PastorReports = lazy(() => import("@/pages/pastor/reports"));
 
-// Treasurer Pages
-import TreasurerDashboard from "@/pages/treasurer/dashboard";
-import TreasurerTithes from "@/pages/treasurer/tithes";
-import TreasurerOfferings from "@/pages/treasurer/offerings";
-import TreasurerBookstore from "@/pages/treasurer/bookstore";
-import TreasurerLoans from "@/pages/treasurer/loans";
-import TreasurerExpenses from "@/pages/treasurer/expenses";
-import TreasurerFinancialReports from "@/pages/treasurer/financial-reports";
+// Treasurer Pages - Lazy loaded
+const TreasurerDashboard = lazy(() => import("@/pages/treasurer/dashboard"));
+const TreasurerTithes = lazy(() => import("@/pages/treasurer/tithes"));
+const TreasurerOfferings = lazy(() => import("@/pages/treasurer/offerings"));
+const TreasurerBookstore = lazy(() => import("@/pages/treasurer/bookstore"));
+const TreasurerLoans = lazy(() => import("@/pages/treasurer/loans"));
+const TreasurerExpenses = lazy(() => import("@/pages/treasurer/expenses"));
+const TreasurerFinancialReports = lazy(() => import("@/pages/treasurer/financial-reports"));
 
-// Deacon Pages
-import DeaconDashboard from "@/pages/deacon/dashboard";
-import DeaconVisitors from "@/pages/deacon/visitors-crud";
-import DeaconHelp from "@/pages/deacon/help";
-import DeaconBulletin from "@/pages/deacon/bulletin";
+// Deacon Pages - Lazy loaded
+const DeaconDashboard = lazy(() => import("@/pages/deacon/dashboard"));
+const DeaconVisitors = lazy(() => import("@/pages/deacon/visitors-crud"));
+const DeaconHelp = lazy(() => import("@/pages/deacon/help"));
+const DeaconBulletin = lazy(() => import("@/pages/deacon/bulletin"));
 
-// LGPD Pages
-import LGPDDashboard from "@/pages/lgpd/dashboard";
-import LGPDMyData from "@/pages/lgpd/my-data";
-import LGPDExport from "@/pages/lgpd/export";
-import LGPDRequests from "@/pages/lgpd/requests";
-import LGPDConsents from "@/pages/lgpd/consents";
+// LGPD Pages - Lazy loaded
+const LGPDDashboard = lazy(() => import("@/pages/lgpd/dashboard"));
+const LGPDMyData = lazy(() => import("@/pages/lgpd/my-data"));
+const LGPDExport = lazy(() => import("@/pages/lgpd/export"));
+const LGPDRequests = lazy(() => import("@/pages/lgpd/requests"));
+const LGPDConsents = lazy(() => import("@/pages/lgpd/consents"));
 
 function Router() {
   return (

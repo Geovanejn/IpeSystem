@@ -30,6 +30,50 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Core React libraries
+          'react-vendor': ['react', 'react-dom', 'react/jsx-runtime'],
+          
+          // Routing and state management
+          'router-vendor': ['wouter', '@tanstack/react-query'],
+          
+          // UI component libraries
+          'radix-vendor': [
+            '@radix-ui/react-accordion',
+            '@radix-ui/react-alert-dialog',
+            '@radix-ui/react-avatar',
+            '@radix-ui/react-checkbox',
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-label',
+            '@radix-ui/react-popover',
+            '@radix-ui/react-select',
+            '@radix-ui/react-separator',
+            '@radix-ui/react-slot',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-toast',
+            '@radix-ui/react-tooltip',
+          ],
+          
+          // Charts library (heavy)
+          'chart-vendor': ['recharts'],
+          
+          // Form handling
+          'form-vendor': ['react-hook-form', '@hookform/resolvers', 'zod'],
+          
+          // Icons (lucide-react)
+          'icon-vendor': ['lucide-react'],
+          
+          // Date utilities
+          'date-vendor': ['date-fns'],
+        },
+      },
+    },
+    
+    // Chunk size warnings
+    chunkSizeWarningLimit: 600,
   },
   server: {
     fs: {
