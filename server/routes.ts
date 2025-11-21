@@ -1,6 +1,8 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import rateLimit from "express-rate-limit";
+import { doubleCsrf } from "csrf-csrf";
+import crypto from "crypto";
 import { storage } from "./storage";
 import { authenticateUser, createSession, getSession, deleteSession, hashPassword } from "./auth";
 import { z } from "zod";
@@ -20,6 +22,38 @@ import {
   insertLgpdRequestSchema,
   insertAuditLogSchema
 } from "@shared/schema";
+
+// ============================================
+// CSRF PROTECTION
+// ============================================
+
+// Gerar secret aleatório para CSRF (em produção, usar variável de ambiente)
+const CSRF_SECRET = process.env.CSRF_SECRET || crypto.randomBytes(32).toString('hex');
+
+// Configuração do CSRF usando csrf-csrf (Double Submit Cookie Pattern)
+const { generateCsrfToken, doubleCsrfProtection } = doubleCsrf({
+  getSecret: () => CSRF_SECRET,
+  getSessionIdentifier: (req) => {
+    // Extrair apenas o sessionId do header Authorization (sem "Bearer ")
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      return authHeader.replace("Bearer ", "");
+    }
+    // Fallback para requests sem auth (como primeiro acesso)
+    return "anonymous";
+  },
+  cookieName: "ipe_csrf_token", // Nome simples para desenvolvimento
+  cookieOptions: {
+    sameSite: "lax",
+    secure: false, // Desativar em desenvolvimento para funcionar com HTTP
+    httpOnly: true,
+  },
+  size: 64,
+  getCsrfTokenFromRequest: (req) => {
+    // Aceita token do header X-CSRF-Token
+    return req.headers["x-csrf-token"] as string;
+  },
+});
 
 // ============================================
 // RATE LIMITING
@@ -109,6 +143,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Session error:", error);
       res.status(500).json({ error: "Internal server error" });
     }
+  });
+
+  // ============================================
+  // CSRF TOKEN ENDPOINT
+  // ============================================
+  
+  // Endpoint para obter token CSRF (não requer autenticação nem proteção CSRF)
+  app.get("/api/csrf-token", async (req, res) => {
+    try {
+      const token = generateCsrfToken(req, res);
+      res.json({ token });
+    } catch (error) {
+      console.error("CSRF token generation error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // ============================================
+  // APLICAR CSRF PROTECTION GLOBALMENTE
+  // ============================================
+  
+  // Rotas isentas de validação CSRF
+  const csrfExemptRoutes = [
+    '/api/auth/login',
+    '/api/auth/logout',
+    '/api/auth/session',
+    '/api/csrf-token',
+  ];
+  
+  // Middleware condicional: aplica CSRF apenas em rotas mutativas não isentas
+  app.use((req, res, next) => {
+    const isExempt = csrfExemptRoutes.includes(req.path);
+    const isMutatingMethod = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method);
+    
+    // Se é uma rota isenta OU não é mutativa (GET, HEAD, OPTIONS), pula validação
+    if (isExempt || !isMutatingMethod) {
+      return next();
+    }
+    
+    // Caso contrário, aplica proteção CSRF
+    doubleCsrfProtection(req, res, next);
   });
 
   // ============================================

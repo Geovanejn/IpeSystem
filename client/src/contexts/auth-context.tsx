@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useLocation } from "wouter";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, fetchCsrfToken, clearCsrfToken } from "@/lib/queryClient";
 
 interface User {
   id: string;
@@ -81,6 +81,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem("sessionId", sessionId);
       localStorage.setItem("user", JSON.stringify(userData));
       setUser(userData);
+      
+      // CRÍTICO: Renovar token CSRF após login com novo sessionId
+      await fetchCsrfToken().catch(console.error);
     } catch (error) {
       console.error("Login failed:", error);
       throw error;
@@ -97,6 +100,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
+      // Limpar token CSRF ao fazer logout
+      clearCsrfToken();
       localStorage.removeItem("sessionId");
       localStorage.removeItem("user");
       setUser(null);

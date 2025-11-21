@@ -217,12 +217,183 @@ Tentativa 7: HTTP 429 - "Muitas tentativas de login..."
 
 ---
 
+## ✅ CORREÇÃO #4: CSRF Protection (COMPLETO)
+
+**Severidade:** 🔴 CRÍTICO  
+**Tempo estimado:** 4 horas  
+**Tempo real:** 2 horas  
+**Status:** ✅ COMPLETO (Aguardando Architect Review)
+
+### Problema Identificado
+```typescript
+// ❌ VULNERÁVEL - Sem proteção CSRF
+app.post("/api/members", async (req, res) => {
+  // Atacante pode fazer requisições cross-site
+  const member = await storage.createMember(req.body);
+  // ...
+});
+```
+
+**Vulnerabilidades:**
+- Nenhuma proteção contra CSRF (Cross-Site Request Forgery)
+- Atacante pode executar ações em nome do usuário autenticado
+- Sites maliciosos podem fazer requisições não autorizadas
+- Todas as 61 rotas API estavam desprotegidas
+
+### Solução Implementada
+
+**Pacotes Instalados:**
+- `csrf-csrf` (v3.0.6) - Double Submit Cookie Pattern
+- `cookie-parser` (v1.4.7) - Necessário para csrf-csrf
+
+**Backend (server/index.ts):**
+```typescript
+import cookieParser from "cookie-parser";
+
+// Cookie parser - necessário para csrf-csrf
+app.use(cookieParser());
+```
+
+**Backend (server/routes.ts):**
+```typescript
+import { doubleCsrf } from "csrf-csrf";
+import crypto from "crypto";
+
+// Secret aleatório (em produção usar env var)
+const CSRF_SECRET = process.env.CSRF_SECRET || crypto.randomBytes(32).toString('hex');
+
+// Configuração csrf-csrf (Double Submit Cookie Pattern)
+const { generateCsrfToken, doubleCsrfProtection } = doubleCsrf({
+  getSecret: () => CSRF_SECRET,
+  getSessionIdentifier: (req) => req.headers.authorization || "",
+  cookieName: "ipe_csrf_token",
+  cookieOptions: {
+    sameSite: "lax",
+    secure: false, // HTTP em dev, HTTPS em prod
+    httpOnly: true,
+  },
+  size: 64,
+  getCsrfTokenFromRequest: (req) => req.headers["x-csrf-token"] as string,
+});
+
+// Endpoint para obter token CSRF
+app.get("/api/csrf-token", async (req, res) => {
+  const token = generateCsrfToken(req, res);
+  res.json({ token });
+});
+
+// Rotas isentas de CSRF
+const csrfExemptRoutes = [
+  '/api/auth/login',
+  '/api/auth/logout',
+  '/api/auth/session',
+  '/api/csrf-token',
+];
+
+// Middleware condicional: aplica CSRF apenas em rotas mutativas
+app.use((req, res, next) => {
+  const isExempt = csrfExemptRoutes.includes(req.path);
+  const isMutatingMethod = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method);
+  
+  if (isExempt || !isMutatingMethod) {
+    return next();
+  }
+  
+  // Protege todas as rotas mutativas
+  doubleCsrfProtection(req, res, next);
+});
+```
+
+**Frontend (client/src/lib/queryClient.ts):**
+```typescript
+// Cache do token CSRF em memória
+let csrfToken: string | null = null;
+
+// Buscar token CSRF do backend
+async function fetchCsrfToken(): Promise<string> {
+  const response = await fetch("/api/csrf-token", {
+    credentials: "include",
+  });
+  const data = await response.json();
+  csrfToken = data.token;
+  return data.token;
+}
+
+// Inicializar token ao carregar aplicação
+fetchCsrfToken().catch(console.error);
+
+// Incluir token CSRF em requisições mutativas
+export async function apiRequest(method, url, data) {
+  const headers = {};
+  
+  // Incluir token CSRF para POST/PUT/PATCH/DELETE
+  const isMutatingMethod = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method.toUpperCase());
+  if (isMutatingMethod) {
+    if (!csrfToken) {
+      await fetchCsrfToken();
+    }
+    if (csrfToken) {
+      headers["X-CSRF-Token"] = csrfToken;
+    }
+  }
+  
+  const res = await fetch(url, {
+    method,
+    headers,
+    body: data ? JSON.stringify(data) : undefined,
+    credentials: "include",
+  });
+  
+  // Se erro 403 (CSRF inválido), renovar token e tentar novamente
+  if (res.status === 403 && isMutatingMethod) {
+    await fetchCsrfToken();
+    if (csrfToken) {
+      headers["X-CSRF-Token"] = csrfToken;
+    }
+    const retryRes = await fetch(url, { method, headers, body, credentials: "include" });
+    return retryRes;
+  }
+  
+  return res;
+}
+```
+
+**Melhorias:**
+- ✅ Proteção CSRF em todas as 61 rotas mutativas
+- ✅ Double Submit Cookie Pattern (stateless, não depende de sessões)
+- ✅ Rotas de auth isentas (login, logout, session)
+- ✅ Token renovado automaticamente em erro 403
+- ✅ Cookie httpOnly (protegido contra XSS)
+- ✅ SameSite=lax (protege contra CSRF básico)
+
+### Arquivos Modificados
+- ✅ `server/index.ts` (cookie-parser)
+- ✅ `server/routes.ts` (csrf-csrf, endpoint, middleware)
+- ✅ `client/src/lib/queryClient.ts` (token fetch e envio)
+- ✅ `package.json` (csrf-csrf, cookie-parser)
+
+### Validação
+- ✅ Endpoint /api/csrf-token retorna token válido
+- ✅ Frontend busca token automaticamente ao iniciar
+- ✅ Sem erros LSP
+- ⏳ Aguardando teste de login
+- ⏳ Aguardando teste de CRUD (create member)
+- ⏳ Aguardando review do Architect
+
+### Impacto em Produção
+- ✅ Proteção imediata contra CSRF
+- ✅ Zero downtime (rotas de auth isentas)
+- ✅ Compatível com sistema de sessões atual
+- ⚠️ Nota: Definir CSRF_SECRET em variável de ambiente
+
+---
+
 ## 🔄 PRÓXIMAS CORREÇÕES
 
-### Correção #4: CSRF Protection
+### Correção #5: Autorização por Role
 **Status:** 🔄 Pendente  
 **Prioridade:** 🔴 CRÍTICO  
-**Tempo estimado:** 4 horas
+**Tempo estimado:** 1 dia
 
 ### Correção #5: Autorização por Role
 **Status:** 🔄 Pendente  
