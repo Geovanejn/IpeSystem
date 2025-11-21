@@ -103,12 +103,24 @@ export default function CatechumensPage() {
       const response = await apiRequest("POST", "/api/catechumens", data);
       return response.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/catechumens"] });
-      toast({
-        title: "Catecúmeno cadastrado",
-        description: "O catecúmeno foi cadastrado com sucesso.",
-      });
+    onSuccess: (response: any) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/catechumens"], refetchType: 'all' });
+      
+      // Se criar como concluído, também refetch membros
+      if (response.memberCreated) {
+        queryClient.invalidateQueries({ queryKey: ["/api/members"], refetchType: 'all' });
+        toast({
+          title: "✅ Catecúmeno e Membro criados!",
+          description: `${response.memberName} agora é um membro ativo da igreja.`,
+          duration: 7000,
+        });
+      } else {
+        toast({
+          title: "Catecúmeno cadastrado",
+          description: "O catecúmeno foi cadastrado com sucesso.",
+        });
+      }
+      
       setCreateDialogOpen(false);
       createForm.reset({
         fullName: "",
@@ -134,11 +146,11 @@ export default function CatechumensPage() {
       return response.json();
     },
     onSuccess: (response: any) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/catechumens"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/members"] }); // Atualizar lista de membros também
+      queryClient.invalidateQueries({ queryKey: ["/api/catechumens"], refetchType: 'all' });
       
       // ✅ Verificar se um membro foi criado automaticamente
       if (response.memberCreated) {
+        queryClient.invalidateQueries({ queryKey: ["/api/members"], refetchType: 'all' });
         toast({
           title: "✅ Catecúmeno concluído e Membro criado!",
           description: `${response.memberName} agora é um membro ativo da igreja. Complete os dados pessoais na página de Membros.`,
