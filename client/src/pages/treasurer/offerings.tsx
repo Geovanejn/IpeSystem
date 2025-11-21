@@ -52,15 +52,17 @@ export default function TreasurerOfferingsPage() {
   const mutation = useMutation({
     mutationFn: async (data: FormData) => {
       if (editingId) {
-        return apiRequest(`/api/offerings/${editingId}`, {
+        return await fetch(`/api/offerings/${editingId}`, {
           method: "PATCH",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data),
-        });
+        }).then(r => r.json());
       }
-      return apiRequest("/api/offerings", {
+      return await fetch("/api/offerings", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
-      });
+      }).then(r => r.json());
     },
     onSuccess: () => {
       toast({
@@ -84,7 +86,7 @@ export default function TreasurerOfferingsPage() {
   // Deletar oferta
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      return apiRequest(`/api/offerings/${id}`, { method: "DELETE" });
+      return await fetch(`/api/offerings/${id}`, { method: "DELETE" }).then(r => r.json());
     },
     onSuccess: () => {
       toast({
@@ -243,7 +245,7 @@ export default function TreasurerOfferingsPage() {
                     <FormItem>
                       <FormLabel>Observações (opcional)</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Digite observações..." data-testid="textarea-notes" {...field} />
+                        <Textarea placeholder="Digite observações..." data-testid="textarea-notes" value={field.value || ""} onChange={field.onChange} onBlur={field.onBlur} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

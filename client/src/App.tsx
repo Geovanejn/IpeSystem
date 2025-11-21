@@ -25,7 +25,7 @@ import TreasurerOfferings from "@/pages/treasurer/offerings";
 
 // Deacon Pages
 import DeaconDashboard from "@/pages/deacon/dashboard";
-import DeaconVisitors from "@/pages/deacon/visitors";
+import DeaconVisitors from "@/pages/deacon/visitors-crud";
 
 // LGPD Pages
 import LGPDDashboard from "@/pages/lgpd/dashboard";
