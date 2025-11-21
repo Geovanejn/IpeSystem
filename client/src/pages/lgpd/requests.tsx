@@ -13,6 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import { queryClient, apiRequest } from "@/lib/queryClient";
 import { AlertTriangle, Plus, FileText, Clock, CheckCircle } from "lucide-react";
 
 const formSchema = z.object({
@@ -62,17 +63,14 @@ export default function LGPDRequestsPage() {
 
   const mutation = useMutation({
     mutationFn: async (data: FormData) => {
-      return await fetch("/api/lgpd-requests", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      }).then(r => r.json());
+      return await apiRequest("POST", "/api/lgpd-requests", data);
     },
     onSuccess: () => {
       toast({
         title: "Solicitação enviada",
         description: "Sua solicitação LGPD foi enviada com sucesso. Você será notificado em breve.",
       });
+      queryClient.invalidateQueries({ queryKey: ["/api/lgpd-requests"] });
       setOpen(false);
       form.reset();
     },

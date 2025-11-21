@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle2, AlertCircle, Lock } from "lucide-react";
-import { queryClient } from "@/lib/queryClient";
+import { queryClient, apiRequest } from "@/lib/queryClient";
 
 interface ConsentType {
   id: string;
@@ -32,11 +32,7 @@ export default function LGPDConsentsPage() {
 
   const updateMutation = useMutation({
     mutationFn: async (consentUpdates: Record<string, boolean>) => {
-      return await fetch("/api/lgpd-consents", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ consents: consentUpdates }),
-      }).then(r => r.json());
+      return await apiRequest("PATCH", "/api/lgpd-consents", { consents: consentUpdates });
     },
     onSuccess: () => {
       toast({
@@ -44,6 +40,7 @@ export default function LGPDConsentsPage() {
         description: "Suas preferências de consentimento foram salvas com sucesso.",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/lgpd-consents"] });
+      setSelectedConsents({});
     },
     onError: (error: any) => {
       toast({

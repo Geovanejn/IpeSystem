@@ -1224,40 +1224,193 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // LGPD export endpoint (generate PDF/Excel/JSON)
   app.post("/api/lgpd/export", async (req, res) => {
     try {
-      const { memberId, visitorId, format } = req.body;
+      const { identifier, format } = req.body;
       
-      // Mock data export - in production would generate actual files
-      const mockData = {
+      if (!identifier) {
+        return res.status(400).json({ error: "Identifier (CPF or email) is required" });
+      }
+      
+      // Find member or visitor by email (simplified - in production would also check CPF)
+      const members = await storage.getMembers();
+      const visitors = await storage.getVisitors();
+      
+      const member = members.find(m => m.email.toLowerCase() === identifier.toLowerCase());
+      const visitor = visitors.find(v => v.email?.toLowerCase() === identifier.toLowerCase());
+      
+      if (!member && !visitor) {
+        return res.status(404).json({ error: "Nenhum dado encontrado para o identificador fornecido" });
+      }
+      
+      // Gather all data for the user
+      const exportData: any = {
         format: format || "json",
         exportDate: new Date().toISOString(),
-        dataCategories: {
-          personal: {
-            fullName: "Exemplo Nome",
-            email: "exemplo@email.com",
-            phone: "+55 11 99999-9999",
-            address: "Rua Exemplo, 123",
-          },
-          financial: {
-            tithes: 12500.00,
-            offerings: 2300.50,
-          },
-          spiritual: {
-            status: "ativo",
-            ecclesiasticalRole: "membro",
-            communionStatus: "comungante",
-          },
-        },
+        identifier,
       };
       
+      if (member) {
+        // Personal data from members table
+        exportData.personal = {
+          fullName: member.fullName,
+          email: member.email,
+          primaryPhone: member.primaryPhone,
+          secondaryPhone: member.secondaryPhone || null,
+          gender: member.gender,
+          birthDate: member.birthDate,
+          maritalStatus: member.maritalStatus,
+          address: member.address,
+          addressNumber: member.addressNumber,
+          addressComplement: member.addressComplement,
+          neighborhood: member.neighborhood,
+          zipCode: member.zipCode,
+          marriageDate: member.marriageDate || null,
+        };
+        
+        // Spiritual data
+        exportData.spiritual = {
+          communionStatus: member.communionStatus,
+          ecclesiasticalRole: member.ecclesiasticalRole,
+          memberStatus: member.memberStatus,
+          admissionDate: member.admissionDate,
+          lgpdConsentUrl: member.lgpdConsentUrl,
+        };
+        
+        // Financial data - Tithes
+        const allTithes = await storage.getTithes();
+        const memberTithes = allTithes.filter(t => t.memberId === member.id);
+        exportData.tithes = memberTithes.map(t => ({
+          amount: t.amount,
+          date: t.date,
+          paymentMethod: t.paymentMethod,
+          notes: t.notes,
+        }));
+        
+        // Financial data - Offerings
+        const allOfferings = await storage.getOfferings();
+        const memberOfferings = allOfferings.filter(o => o.memberId === member.id);
+        exportData.offerings = memberOfferings.map(o => ({
+          amount: o.amount,
+          date: o.date,
+          type: o.type,
+          paymentMethod: o.paymentMethod,
+          notes: o.notes,
+        }));
+        
+        // Bookstore purchases
+        const allBookstoreSales = await storage.getBookstoreSales();
+        const memberBookstoreSales = allBookstoreSales.filter(s => s.memberId === member.id);
+        exportData.bookstoreSales = memberBookstoreSales.map(s => ({
+          productName: s.productName,
+          quantity: s.quantity,
+          unitPrice: s.unitPrice,
+          totalPrice: s.totalPrice,
+          saleDate: s.saleDate,
+          paymentMethod: s.paymentMethod,
+        }));
+        
+        // LGPD Requests
+        const lgpdRequests = await storage.getLgpdRequests(member.id);
+        exportData.lgpdRequests = lgpdRequests.map(r => ({
+          action: r.action,
+          description: r.description,
+          status: r.status,
+          createdAt: r.createdAt,
+          resolvedAt: r.resolvedAt,
+        }));
+        
+        // LGPD Consents
+        const lgpdConsents = await storage.getLgpdConsents(member.id);
+        exportData.lgpdConsents = lgpdConsents.map(c => ({
+          consentType: c.consentType,
+          purpose: c.purpose,
+          granted: c.granted,
+          grantedAt: c.grantedAt,
+          revokedAt: c.revokedAt,
+        }));
+      } else if (visitor) {
+        // Personal data from visitors table
+        exportData.personal = {
+          fullName: visitor.fullName,
+          phone: visitor.phone,
+          email: visitor.email || null,
+          address: visitor.address || null,
+          hasChurch: visitor.hasChurch,
+          churchOrigin: visitor.churchOrigin || null,
+          firstVisitDate: visitor.firstVisitDate,
+          notes: visitor.notes || null,
+          lgpdConsentUrl: visitor.lgpdConsentUrl,
+        };
+        
+        // LGPD Requests
+        const lgpdRequests = await storage.getLgpdRequests(undefined, visitor.id);
+        exportData.lgpdRequests = lgpdRequests.map(r => ({
+          action: r.action,
+          description: r.description,
+          status: r.status,
+          createdAt: r.createdAt,
+          resolvedAt: r.resolvedAt,
+        }));
+        
+        // LGPD Consents
+        const lgpdConsents = await storage.getLgpdConsents(undefined, visitor.id);
+        exportData.lgpdConsents = lgpdConsents.map(c => ({
+          consentType: c.consentType,
+          purpose: c.purpose,
+          granted: c.granted,
+          grantedAt: c.grantedAt,
+          revokedAt: c.revokedAt,
+        }));
+      }
+      
+      // Generate response based on format
       if (format === "json") {
         res.setHeader("Content-Type", "application/json");
         res.setHeader("Content-Disposition", "attachment; filename=dados_ipe.json");
-        return res.json(mockData);
+        return res.json(exportData);
       } else if (format === "csv") {
         res.setHeader("Content-Type", "text/csv");
         res.setHeader("Content-Disposition", "attachment; filename=dados_ipe.csv");
-        const csv = "Nome,Email,Telefone,Status\nExemplo,exemplo@email.com,+55 11 99999-9999,Ativo";
+        
+        // Generate CSV from data
+        let csv = "Categoria,Campo,Valor\n";
+        
+        if (exportData.personal) {
+          Object.entries(exportData.personal).forEach(([key, value]) => {
+            csv += `Dados Pessoais,${key},${value}\n`;
+          });
+        }
+        
+        if (exportData.spiritual) {
+          Object.entries(exportData.spiritual).forEach(([key, value]) => {
+            csv += `Dados Espirituais,${key},${value}\n`;
+          });
+        }
+        
+        if (exportData.tithes && exportData.tithes.length > 0) {
+          csv += "\nDízimos\n";
+          csv += "Data,Valor,Forma de Pagamento\n";
+          exportData.tithes.forEach((t: any) => {
+            csv += `${t.date},${t.amount},${t.paymentMethod}\n`;
+          });
+        }
+        
+        if (exportData.offerings && exportData.offerings.length > 0) {
+          csv += "\nOfertas\n";
+          csv += "Data,Valor,Tipo,Forma de Pagamento\n";
+          exportData.offerings.forEach((o: any) => {
+            csv += `${o.date},${o.amount},${o.type},${o.paymentMethod}\n`;
+          });
+        }
+        
         return res.send(csv);
+      } else if (format === "pdf") {
+        // PDF generation would require a library like pdfkit or puppeteer
+        // For now, return JSON with a message
+        res.json({ 
+          message: "PDF export is not yet implemented. Use JSON or CSV format.",
+          data: exportData,
+          availableFormats: ["json", "csv"],
+        });
       } else {
         res.json({ 
           message: "Export available in JSON and CSV formats",
@@ -1266,6 +1419,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
     } catch (error) {
+      console.error("Export error:", error);
       res.status(500).json({ error: "Failed to export data" });
     }
   });
