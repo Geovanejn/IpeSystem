@@ -837,7 +837,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // TITHES ROUTES (Treasurer)
   // ============================================
   
-  app.get("/api/tithes", async (req, res) => {
+  app.get("/api/tithes", requireRole("pastor", "treasurer"), async (req, res) => {
     try {
       const tithes = await storage.getTithes();
       res.json(tithes);
@@ -846,7 +846,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/tithes", async (req, res) => {
+  app.post("/api/tithes", requireRole("pastor", "treasurer"), async (req, res) => {
     try {
       const validated = insertTitheSchema.parse(req.body);
       const tithe = await storage.createTithe(validated);
@@ -859,7 +859,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/tithes/:id", async (req, res) => {
+  app.delete("/api/tithes/:id", requireRole("pastor", "treasurer"), async (req, res) => {
     try {
       const success = await storage.deleteTithe(req.params.id);
       
@@ -877,7 +877,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // OFFERINGS ROUTES (Treasurer)
   // ============================================
   
-  app.get("/api/offerings", async (req, res) => {
+  app.get("/api/offerings", requireRole("pastor", "treasurer"), async (req, res) => {
     try {
       const offerings = await storage.getOfferings();
       res.json(offerings);
@@ -886,7 +886,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/offerings", async (req, res) => {
+  app.post("/api/offerings", requireRole("pastor", "treasurer"), async (req, res) => {
     try {
       const validated = insertOfferingSchema.parse(req.body);
       const offering = await storage.createOffering(validated);
@@ -899,7 +899,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/offerings/:id", async (req, res) => {
+  app.delete("/api/offerings/:id", requireRole("pastor", "treasurer"), async (req, res) => {
     try {
       const success = await storage.deleteOffering(req.params.id);
       
@@ -917,7 +917,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // BOOKSTORE SALES ROUTES (Treasurer)
   // ============================================
   
-  app.get("/api/bookstore-sales", async (req, res) => {
+  app.get("/api/bookstore-sales", requireRole("pastor", "treasurer"), async (req, res) => {
     try {
       const sales = await storage.getBookstoreSales();
       res.json(sales);
@@ -926,7 +926,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/bookstore-sales", async (req, res) => {
+  app.post("/api/bookstore-sales", requireRole("pastor", "treasurer"), async (req, res) => {
     try {
       const validated = insertBookstoreSaleSchema.parse(req.body);
       const sale = await storage.createBookstoreSale(validated);
@@ -943,7 +943,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // LOANS ROUTES (Treasurer)
   // ============================================
   
-  app.get("/api/loans", async (req, res) => {
+  app.get("/api/loans", requireRole("pastor", "treasurer"), async (req, res) => {
     try {
       const loans = await storage.getLoans();
       res.json(loans);
@@ -952,7 +952,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/loans", async (req, res) => {
+  app.post("/api/loans", requireRole("pastor", "treasurer"), async (req, res) => {
     try {
       const validated = insertLoanSchema.parse(req.body);
       const loan = await storage.createLoan(validated);
@@ -982,7 +982,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/loans/:id", async (req, res) => {
+  app.patch("/api/loans/:id", requireRole("pastor", "treasurer"), async (req, res) => {
     try {
       const validated = insertLoanSchema.partial().parse(req.body);
       const loanBefore = await storage.getLoan(req.params.id);
@@ -1033,7 +1033,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/loans/:id", async (req, res) => {
+  app.delete("/api/loans/:id", requireRole("pastor", "treasurer"), async (req, res) => {
     try {
       const loan = await storage.getLoan(req.params.id);
       
@@ -1066,7 +1066,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // EXPENSES ROUTES (Treasurer)
   // ============================================
   
-  app.get("/api/expenses", async (req, res) => {
+  app.get("/api/expenses", requireRole("pastor", "treasurer"), async (req, res) => {
     try {
       const expenses = await storage.getExpenses();
       res.json(expenses);
@@ -1075,7 +1075,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/expenses", async (req, res) => {
+  app.post("/api/expenses", requireRole("pastor", "treasurer"), async (req, res) => {
     try {
       const validated = insertExpenseSchema.parse(req.body);
       const expense = await storage.createExpense(validated);
@@ -1088,7 +1088,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/expenses/:id", async (req, res) => {
+  app.patch("/api/expenses/:id", requireRole("pastor", "treasurer"), async (req, res) => {
     try {
       // Verificar se a expense existe e validar
       const existingExpense = await storage.getExpense(req.params.id);
@@ -1120,7 +1120,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/expenses/:id", async (req, res) => {
+  app.delete("/api/expenses/:id", requireRole("pastor", "treasurer"), async (req, res) => {
     try {
       // Verificar se a expense existe e validar
       const existingExpense = await storage.getExpense(req.params.id);
