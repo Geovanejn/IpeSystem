@@ -131,6 +131,21 @@ Cria: 1 pastor, 4 membros, 3 catecúmenos para testar conversão automática.
 
 ## Recent Changes
 
+### 21/11/2025 - Verificação Profunda: Rotas Diácono e LGPD (VALIDADO ✅)
+- ✅ Verificadas **24 rotas** do módulo diácono e LGPD
+- ✅ **Módulo Diácono (14 rotas):**
+  - 5 rotas de Visitantes: Pastor lê, Diácono modifica ✅
+  - 4 rotas de Ajuda Diaconal: Pastor lê, Diácono modifica ✅
+  - 5 rotas de Boletins: Pastor lê, Diácono modifica ✅
+- ✅ **Módulo LGPD (10 rotas):**
+  - 3 rotas de Consentimentos: Todos autenticados ✅
+  - 3 rotas de Solicitações: Todos autenticados ✅
+  - 4 rotas Portal LGPD: Todos autenticados ✅
+- ✅ Zero erros LSP em todo o sistema
+- ✅ Servidor rodando corretamente na porta 5000
+- ✅ Todas as autorizações implementadas conforme especificação
+- ✅ Documentado em VERIFICACAO_ROTAS_DIACONO_LGPD.md com matriz completa de permissões
+
 ### 21/11/2025 - Correção #5: Autorização baseada em Roles (COMPLETO E VALIDADO)
 - ✅ Criado middleware `requireRole(...roles)` para proteção de endpoints
 - ✅ Aplicado em **52 rotas** com modelo de autorização granular:
