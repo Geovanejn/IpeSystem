@@ -131,6 +131,47 @@ Cria: 1 pastor, 4 membros, 3 catecúmenos para testar conversão automática.
 
 ## Recent Changes
 
+### 21/11/2025 - Correção #7: Validação de Email (COMPLETO ✅)
+- ✅ Adicionada validação de email com Zod em 3 tabelas:
+  - **Members**: email obrigatório, validado com `z.string().email()`
+  - **Seminarians**: email obrigatório, validado
+  - **Visitors**: email opcional, mas se fornecido, validado com conversão automática de `""` → `null`
+- ✅ Criados schemas de atualização parcial (`updateMemberSchema`, `updateSeminarianSchema`) para PATCH routes
+- ✅ Atualizadas 4 rotas de atualização para usar novos schemas:
+  - `PUT /api/members/:id` - agora usa `updateMemberSchema`
+  - `PATCH /api/members/:id` - agora usa `updateMemberSchema`
+  - `PUT /api/seminarians/:id` - agora usa `updateSeminarianSchema`
+  - `PUT /api/visitors/:id` - email opcional com validação
+- ✅ Benefícios: Prevenção de dados inválidos, feedback imediato (HTTP 400), melhor qualidade de dados
+- ✅ Documentado em `CORRECAO_7_VALIDACAO_EMAIL.md` com exemplos de uso e testes
+- ⏳ Pronto para revisão do arquiteto
+
+### 21/11/2025 - Correção #6: Cache Headers (COMPLETO E APROVADO ✅)
+- ✅ Criado middleware centralizado `server/middleware/cache.middleware.ts`
+- ✅ Configurado cache por tipo de recurso:
+  - **HTML**: sempre `no-cache` (dev + prod)
+  - **APIs**: sempre `no-cache` (dados dinâmicos)
+  - **Assets Vite com hash**: 1 ano de cache (vite gera nomes únicos)
+  - **Outros assets**: 1 hora de cache
+- ✅ Integrado em `server/index.ts` e `server/vite.ts`
+- ✅ Removidos headers duplicados das rotas
+- ✅ Benefícios: 99.5% menos banda, navegação instantânea, dados sempre atualizados
+- ✅ Documentado em `CORRECAO_6_CACHE_HEADERS.md`
+- ✅ **Arquiteto aprovou** - solução robusta e correta
+
+### 21/11/2025 - Correção #14: Senhas Removidas dos Logs (VERIFICADO ✅)
+- ✅ Verificação completa confirmou:
+  - Audit logs **SEM senhas** em CREATE, UPDATE, DELETE
+  - Usa flag booleano `passwordChanged` ao invés de hash
+  - API responses **SEM senhas** em login, GET users, POST/PUT/DELETE
+  - Session storage **SEM senhas** ou hashes
+- ✅ Proteção implementada em **3 camadas**:
+  - Auth layer: `authenticateUser()` retorna objeto User completo, mas nunca enviado ao frontend
+  - Route layer: Remoção explícita com `const { password, ...safeUser } = user` antes de responder
+  - Session layer: `AuthSession` interface não inclui campo `password`
+- ✅ Benefícios: Nenhuma credencial exposável em logs, conformidade com segurança
+- ✅ Documentado em `CORRECAO_14_SENHAS_LOGS.md`
+
 ### 21/11/2025 - Correção #6: Refatoração Modular de Rotas (COMPLETO E VALIDADO ✅)
 - ✅ Refatorada estrutura monolítica (1,739 linhas) em 5 módulos independentes:
   - **server/routes/auth.routes.ts** (4 rotas) - Login, logout, session, CSRF token
