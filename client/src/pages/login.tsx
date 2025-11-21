@@ -2,13 +2,12 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useLocation } from "wouter";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { useAuth } from "@/contexts/auth-context";
 import logoUrl from "@assets/Logo IPE Completo sem fundo_1763476158974.png";
 
 const loginSchema = z.object({
@@ -20,8 +19,8 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
-  const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const { login } = useAuth();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -34,45 +33,17 @@ export default function Login() {
   const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
     try {
-      const response = await apiRequest("POST", "/api/auth/login", data);
-      const result = await response.json();
-
-      const { user, sessionId } = result;
-      
-      // Salvar sessão no localStorage
-      localStorage.setItem("sessionId", sessionId);
-      localStorage.setItem("user", JSON.stringify(user));
-
+      await login(data.username, data.password);
       toast({
         title: "Login realizado com sucesso!",
-        description: `Bem-vindo, ${user.username}!`,
+        description: `Bem-vindo, ${data.username}!`,
       });
-
-      // Redirecionar baseado no role
-      switch (user.role) {
-        case "pastor":
-          setLocation("/pastor");
-          break;
-        case "treasurer":
-          setLocation("/treasurer");
-          break;
-        case "deacon":
-          setLocation("/deacon");
-          break;
-        case "member":
-        case "visitor":
-          setLocation("/lgpd");
-          break;
-        default:
-          setLocation("/");
-      }
     } catch (error: any) {
       toast({
         title: "Erro ao fazer login",
         description: error.message || "Usuário ou senha inválidos",
         variant: "destructive",
       });
-    } finally {
       setIsLoading(false);
     }
   };
