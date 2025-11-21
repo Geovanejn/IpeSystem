@@ -114,9 +114,15 @@ export const insertMemberSchema = createInsertSchema(members).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+}).extend({
+  email: z.string().email("Formato de email inválido"),
 });
 
+// Schema para atualizações parciais (PATCH) - permite omitir email
+export const updateMemberSchema = insertMemberSchema.partial();
+
 export type InsertMember = z.infer<typeof insertMemberSchema>;
+export type UpdateMember = z.infer<typeof updateMemberSchema>;
 export type Member = typeof members.$inferSelect;
 
 // ============================================
@@ -143,9 +149,15 @@ export const insertSeminarianSchema = createInsertSchema(seminarians).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+}).extend({
+  email: z.string().email("Formato de email inválido"),
 });
 
+// Schema para atualizações parciais (PATCH) - permite omitir email
+export const updateSeminarianSchema = insertSeminarianSchema.partial();
+
 export type InsertSeminarian = z.infer<typeof insertSeminarianSchema>;
+export type UpdateSeminarian = z.infer<typeof updateSeminarianSchema>;
 export type Seminarian = typeof seminarians.$inferSelect;
 
 // ============================================
@@ -203,6 +215,14 @@ export const insertVisitorSchema = createInsertSchema(visitors).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+}).extend({
+  // Email opcional, mas se fornecido, deve ser válido
+  // Aceita: email válido, string vazia (→ null), null, ou undefined
+  // Transform garante que string vazia seja convertida em null para o banco
+  email: z.string().email("Formato de email inválido")
+    .or(z.literal(""))
+    .nullish()
+    .transform((val) => val === "" || val === undefined ? null : val),
 });
 
 export type InsertVisitor = z.infer<typeof insertVisitorSchema>;

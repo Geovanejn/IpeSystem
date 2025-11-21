@@ -5,7 +5,9 @@ import { requireRole } from "../middleware/auth.middleware";
 import { hashPassword, getSession } from "../auth";
 import {
   insertMemberSchema,
+  updateMemberSchema,
   insertSeminarianSchema,
+  updateSeminarianSchema,
   insertCatechumenSchema,
 } from "@shared/schema";
 
@@ -271,7 +273,7 @@ router.post("/members", requireRole("pastor"), async (req, res) => {
 router.put("/members/:id", requireRole("pastor"), async (req, res) => {
   try {
     const session = (req as any).session;
-    const validated = insertMemberSchema.partial().parse(req.body);
+    const validated = updateMemberSchema.parse(req.body);
     
     // Buscar membro antes da atualização para audit log (requisito LGPD)
     const memberBefore = await storage.getMember(req.params.id);
@@ -312,7 +314,7 @@ router.put("/members/:id", requireRole("pastor"), async (req, res) => {
 router.patch("/members/:id", requireRole("pastor"), async (req, res) => {
   try {
     const session = (req as any).session;
-    const validated = insertMemberSchema.partial().parse(req.body);
+    const validated = updateMemberSchema.parse(req.body);
     
     const memberBefore = await storage.getMember(req.params.id);
     
@@ -420,7 +422,7 @@ router.post("/seminarians", requireRole("pastor"), async (req, res) => {
  */
 router.put("/seminarians/:id", requireRole("pastor"), async (req, res) => {
   try {
-    const validated = insertSeminarianSchema.partial().parse(req.body);
+    const validated = updateSeminarianSchema.parse(req.body);
     const seminarian = await storage.updateSeminarian(req.params.id, validated);
     
     if (!seminarian) {

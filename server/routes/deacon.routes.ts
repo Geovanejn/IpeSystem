@@ -8,6 +8,9 @@ import {
   insertBulletinSchema,
 } from "@shared/schema";
 
+// Schema para atualizações parciais de visitantes
+const updateVisitorSchema = insertVisitorSchema.partial();
+
 const router = Router();
 
 // ============================================
@@ -56,7 +59,7 @@ router.put("/visitors/:id", requireRole("deacon"), async (req, res) => {
       return res.status(404).json({ error: "Visitor not found" });
     }
     
-    const validated = insertVisitorSchema.partial().parse(req.body);
+    const validated = updateVisitorSchema.parse(req.body);
     const visitor = await storage.updateVisitor(req.params.id, validated);
     
     if (!visitor) {
