@@ -61,12 +61,77 @@ const sessionId = `session_${randomId}`;
 
 ---
 
+## ✅ CORREÇÃO #2: Senhas nos Audit Logs (JÁ IMPLEMENTADO)
+
+**Severidade:** 🔴 CRÍTICO  
+**Tempo de verificação:** 15 minutos  
+**Status:** ✅ JÁ ESTAVA CORRETO
+
+### Problema Original (Relatório)
+```typescript
+// ❌ PERIGOSO - Hash de senha ia para audit log
+await storage.createAuditLog({
+  changesAfter: JSON.stringify(newUser) // Continha passwordHash!
+});
+```
+
+### Código Atual (CORRETO)
+```typescript
+// CREATE user
+changesAfter: JSON.stringify({ 
+  username: user.username, 
+  role: user.role, 
+  memberId: user.memberId 
+}),
+
+// UPDATE user
+changesBefore: JSON.stringify({ 
+  username: userBefore.username, 
+  role: userBefore.role, 
+  memberId: userBefore.memberId,
+  passwordChanged: validated.password ? false : undefined
+}),
+changesAfter: JSON.stringify({ 
+  username: user.username, 
+  role: user.role, 
+  memberId: user.memberId,
+  passwordChanged: validated.password ? true : undefined
+}),
+
+// DELETE user
+changesBefore: JSON.stringify({ 
+  username: userBefore.username, 
+  role: userBefore.role, 
+  memberId: userBefore.memberId 
+}),
+```
+
+### Validações Realizadas
+- ✅ Audit logs OMITEM campo `password`
+- ✅ Apenas marca `passwordChanged: true/false` quando aplicável
+- ✅ Nenhum `JSON.stringify(user)` completo encontrado
+- ✅ Apenas tabela `users` tem campo `password`
+- ✅ Console.error não loga dados sensíveis
+- ✅ Seeds (arquivos de teste) podem mostrar senhas de exemplo
+
+### Arquivos Verificados
+- ✅ `server/routes.ts` (linhas 150-280)
+- ✅ `shared/schema.ts` (verificação de tabelas)
+- ✅ `server/auth.ts` (sem logs sensíveis)
+
+### Impacto
+- ✅ Nenhuma ação necessária
+- ✅ Sistema já estava seguro
+- ✅ Aprovado pelo Architect
+
+---
+
 ## 🔄 PRÓXIMAS CORREÇÕES
 
-### Correção #2: Senhas nos Audit Logs
+### Correção #3: Rate Limiting
 **Status:** 🔄 Pendente  
 **Prioridade:** 🔴 CRÍTICO  
-**Tempo estimado:** 1 hora
+**Tempo estimado:** 2 horas
 
 ### Correção #3: Rate Limiting
 **Status:** 🔄 Pendente  
@@ -95,17 +160,17 @@ const sessionId = `session_${randomId}`;
 | # | Problema | Status | Tempo |
 |---|----------|--------|-------|
 | 1 | Session ID previsível | ✅ COMPLETO | 25min |
-| 2 | Senhas nos logs | 🔄 Pendente | - |
+| 2 | Senhas nos logs | ✅ JÁ OK | 15min |
 | 3 | Rate limiting | 🔄 Pendente | - |
 | 4 | CSRF protection | 🔄 Pendente | - |
 | 5 | Autorização | 🔄 Pendente | - |
 | 6 | Refatoração routes | 🔄 Pendente | - |
 
-**Total Completo:** 1/6 (16.67%)  
-**Tempo Total Gasto:** 25 minutos  
-**Tempo Estimado Restante:** ~2.5 dias
+**Total Completo:** 2/6 (33.33%)  
+**Tempo Total Gasto:** 40 minutos  
+**Tempo Estimado Restante:** ~2.4 dias
 
 ---
 
-**Última atualização:** 21/11/2025 - 18:30  
-**Próxima correção:** #2 - Senhas nos Audit Logs
+**Última atualização:** 21/11/2025 - 18:45  
+**Próxima correção:** #3 - Rate Limiting no Login
