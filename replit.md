@@ -131,6 +131,28 @@ Cria: 1 pastor, 4 membros, 3 catecúmenos para testar conversão automática.
 
 ## Recent Changes
 
+### 21/11/2025 - Correção #6: Refatoração Modular de Rotas (COMPLETO E VALIDADO ✅)
+- ✅ Refatorada estrutura monolítica (1,739 linhas) em 5 módulos independentes:
+  - **server/routes/auth.routes.ts** (4 rotas) - Login, logout, session, CSRF token
+  - **server/routes/pastoral.routes.ts** (17 rotas) - Usuários, membros, seminaristas, catecúmenos
+  - **server/routes/finance.routes.ts** (14 rotas) - Dízimos, ofertas, livraria, empréstimos, despesas
+  - **server/routes/deacon.routes.ts** (13 rotas) - Visitantes, ajuda diaconal, boletins
+  - **server/routes/lgpd.routes.ts** (9 rotas) - Consentimentos, solicitações, exportação de dados
+- ✅ Criado **server/middleware/auth.middleware.ts** com middleware `requireRole(...roles)`
+- ✅ Criado **server/routes/index.ts** agregador central com CSRF protection centralizada
+- ✅ Deletado arquivo monolítico server/routes.ts (refatoração 100% completa)
+- ✅ Atualizado server/index.ts para importar do novo sistema modular
+- ✅ **Correções de Audit Logging**: Todas as 52 rotas agora capturam `changesBefore` e `changesAfter`:
+  - PUT/PATCH de members, users, visitors, bulletins
+  - DELETE de members, visitors, diaconal help, bulletins, LGPD requests
+  - Garante rastreabilidade completa para requisito LGPD
+- ✅ Benefícios entregues:
+  - **Manutenibilidade**: Módulos independentes por domínio (pastoral, financeiro, diaconal, LGPD)
+  - **Escalabilidade**: Adicionar novas rotas é apenas criar novo arquivo em server/routes/
+  - **Testabilidade**: Cada módulo pode ser testado isoladamente
+  - **Segurança**: CSRF protection centralizada, middleware de auth consistente
+  - **Auditoria**: 100% das operações mutativas registradas com before/after
+
 ### 21/11/2025 - Verificação Profunda: Rotas Diácono e LGPD (VALIDADO ✅)
 - ✅ Verificadas **24 rotas** do módulo diácono e LGPD
 - ✅ **Módulo Diácono (14 rotas):**
