@@ -54,21 +54,28 @@
 - **Aprovado pelo Architect após 3 ciclos de revisão**
 
 ### 5. ✅ Gestão de Catecúmenos (Painel do Pastor)
-**Status:** Completo e Operacional (Implementado em 21/11/2025)
+**Status:** Completo e Operacional (Implementado em 21/11/2025) | ✅ Atualizado em 21/11/2025
 
 **Funcionalidades:**
 - CRUD completo de catecúmenos em preparação para profissão de fé
 - Campos: nome completo, data início, previsão profissão de fé, etapa, professor, observações
 - 3 Etapas com cores: em_andamento (azul), apto (amarelo), concluído (verde)
 - **Campo Professor bloqueado:** auto-populado com o Pastor (não editável)
-- **Funcionalidade especial:** Ao marcar como "concluído", cria membro automaticamente (TODO nas APIs)
+- ✅ **CRIAÇÃO AUTOMÁTICA DE MEMBRO:** Ao marcar como "concluído", cria membro automaticamente
+  - Membro criado com nome do catecúmeno
+  - Status: "comungante" (fez profissão de fé)
+  - Data de admissão: data da profissão de fé esperada
+  - Campos parciais com placeholders que o pastor deve completar
+  - Nota pastoral automática indicando dados a preencher
+  - Toast notification especial confirmando criação
+  - Audit log registrando a criação automática
 - Filtro por etapa
 - Busca por nome
 - Formulários com validação Zod + React Hook Form
 - Todos os data-testids para testes
 - Alert informativo sobre criação automática de membro
 - Interface em `/pastor/catechumens`
-- **671 linhas de código**
+- **671 linhas de código** (frontend) + lógica backend
 - **Aprovado pelo Architect após 3 ciclos de correção**
 - **Correções implementadas:** useEffect para auto-popular professorId, campo disabled, reset com professorId preservado
 

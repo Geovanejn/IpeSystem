@@ -470,15 +470,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/catechumens/:id", async (req, res) => {
     try {
       const validated = insertCatechumenSchema.partial().parse(req.body);
+      
+      // Buscar catecúmeno original para verificar mudança de status
+      const originalCatechumen = await storage.getCatechumen(req.params.id);
+      if (!originalCatechumen) {
+        return res.status(404).json({ error: "Catechumen not found" });
+      }
+      
       const catechumen = await storage.updateCatechumen(req.params.id, validated);
       
       if (!catechumen) {
         return res.status(404).json({ error: "Catechumen not found" });
       }
       
-      // TODO: Se stage = "concluido", criar membro automaticamente
-      
-      res.json(catechumen);
+      // ✅ CRIAÇÃO AUTOMÁTICA DE MEMBRO ao marcar como "concluído"
+      if (validated.stage === "concluido" && originalCatechumen.stage !== "concluido") {
+        // Criar membro com dados básicos do catecúmeno
+        const admissionDate = catechumen.expectedProfessionDate || new Date().toISOString().split('T')[0];
+        
+        const newMember = await storage.createMember({
+          fullName: catechumen.fullName,
+          birthDate: "2000-01-01", // Placeholder - pastor deve completar
+          gender: "masculino", // Placeholder - pastor deve completar
+          maritalStatus: "solteiro",
+          primaryPhone: "A preencher",
+          email: `${catechumen.fullName.toLowerCase().replace(/\s+/g, '.')}@pendente.com`,
+          address: "A preencher",
+          addressNumber: "S/N",
+          neighborhood: "A preencher",
+          zipCode: "00000-000",
+          communionStatus: "comungante", // Fez profissão de fé
+          ecclesiasticalRole: "membro",
+          memberStatus: "ativo",
+          admissionDate,
+          lgpdConsentUrl: "https://pendente.com/consent.pdf",
+          pastoralNotes: `✅ CRIADO AUTOMATICAMENTE a partir do catecúmeno concluído em ${new Date().toLocaleDateString('pt-BR')}.\n\n⚠️ ATENÇÃO: Complete os dados pessoais (data nascimento, gênero, telefone, email, endereço) assim que possível.`,
+        });
+
+        // Registrar criação automática no audit log
+        const session = getSession(req.headers.authorization?.replace("Bearer ", "") || "");
+        if (session) {
+          await storage.createAuditLog({
+            userId: session.userId,
+            action: "CREATE",
+            tableName: "members",
+            recordId: newMember.id,
+            changesBefore: null,
+            changesAfter: JSON.stringify(newMember),
+          });
+        }
+
+        // Retornar catecúmeno atualizado com info do membro criado
+        res.json({ 
+          ...catechumen, 
+          memberCreated: true, 
+          memberId: newMember.id,
+          memberName: newMember.fullName 
+        });
+      } else {
+        res.json(catechumen);
+      }
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ error: error.errors });

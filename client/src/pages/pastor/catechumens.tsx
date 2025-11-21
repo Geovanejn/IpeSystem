@@ -133,14 +133,16 @@ export default function CatechumensPage() {
       const response = await apiRequest("PUT", `/api/catechumens/${id}`, data);
       return response.json();
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (response: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/catechumens"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/members"] }); // Atualizar lista de membros também
       
-      // Se mudou para "concluído", avisar que um membro será criado
-      if (variables.data.stage === "concluido") {
+      // ✅ Verificar se um membro foi criado automaticamente
+      if (response.memberCreated) {
         toast({
-          title: "Catecúmeno concluído",
-          description: "Um registro de membro será criado automaticamente.",
+          title: "✅ Catecúmeno concluído e Membro criado!",
+          description: `${response.memberName} agora é um membro ativo da igreja. Complete os dados pessoais na página de Membros.`,
+          duration: 7000,
         });
       } else {
         toast({
