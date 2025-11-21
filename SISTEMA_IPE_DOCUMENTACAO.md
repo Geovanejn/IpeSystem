@@ -3,8 +3,8 @@
 ## Igreja Presbiteriana Emaús - Sistema de Gestão Eclesiástica
 
 **Versão:** 1.0.0  
-**Data:** Novembro 2024  
-**Status:** Desenvolvimento - Frontend Completo
+**Data:** Novembro 2025 (Última atualização: 21/11/2025)  
+**Status:** Desenvolvimento - Módulo Pastor 75% Completo
 
 ---
 

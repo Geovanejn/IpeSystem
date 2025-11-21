@@ -118,7 +118,47 @@
   - ✅ Loading states funcionando corretamente
   - ✅ Exportação CSV implementada e funcional
 
-### 8. ✅ Gestão de Dízimos (Painel do Tesoureiro)
+### 8. ✅ Relatórios Pastorais (Painel do Pastor)
+**Status:** Completo e Operacional (Implementado em 21/11/2025)
+
+**Funcionalidades:**
+- 4 Tabs de relatórios: Membros, Seminaristas, Catecúmenos, Visitantes
+- **Cards de Estatísticas em Tempo Real:**
+  - Total de membros por status (Ativo, Inativo, Transferido, Disciplina)
+  - Total de comungantes vs. não comungantes
+  - Total de presbíteros, diáconos
+  - Total de seminaristas por status (Ativo, Em Estágio, Concluído)
+  - Total de catecúmenos por etapa (Em Andamento, Apto, Concluído)
+  - Total de visitantes com/sem igreja
+- **Gráficos Visuais com Recharts:**
+  - Gráfico de barras para status de membros
+  - Gráfico de pizza para distribuição de cargos eclesiásticos
+  - Gráficos por etapa/status para seminaristas e catecúmenos
+  - Gráficos por origem para visitantes
+- **Exportação para CSV** em todas as seções com formatação brasileira (UTF-8 BOM)
+- React Query integrando dados reais do backend
+- Interface em `/pastor/reports`
+- **500+ linhas de código**
+
+### 9. ✅ Dashboard do Pastor - Aprimorado (Painel do Pastor)
+**Status:** Completo e Operacional (Implementado em 21/11/2025)
+
+**Funcionalidades:**
+- **4 Cards Principais com Dados Reais:** Membros Ativos, Seminaristas, Catecúmenos, Visitantes
+- **Widget de Aniversariantes da Semana** com algoritmo de detecção automática (domingo-sábado)
+- **Widget de Próximas Profissões de Fé** mostrando catecúmenos aptos
+- **3 Cards de Resumo Estatístico:**
+  - Membros por Status (Ativos, Inativos, Transferidos, Em Disciplina)
+  - Comunhão (Comungantes vs. Não Comungantes)
+  - Cargo Eclesiástico (Presbíteros, Diáconos, Seminaristas)
+- **Botões de Ações Rápidas** linkados para criar novo membro, catecúmeno, seminarista, relatório, aniversariantes
+- React Query integrando dados em tempo real
+- Loading states com Skeleton components
+- Interface responsiva (mobile, tablet, desktop)
+- Data-testids completos para testes
+- **340+ linhas de código**
+
+### 10. ✅ Gestão de Dízimos (Painel do Tesoureiro)
 **Status:** Básico Implementado
 
 **Funcionalidades:**
@@ -127,22 +167,22 @@
 - Vinculação com membros
 - Interface em `/treasurer/tithes`
 
-### 9. ✅ Visitantes - CRUD Completo (Painel do Diácono)
+### 11. ✅ Visitantes - CRUD Completo (Painel do Diácono)
 **Status:** Básico Implementado
 
 **Funcionalidades:**
 - Listagem de visitantes
 - Interface em `/deacon/visitors`
 
-### 10. ✅ Dashboards
-**Status:** Básicos Implementados
+### 12. ✅ Dashboards
+**Status:** Implementados
 
-- Dashboard do Pastor (`/pastor`)
+- Dashboard do Pastor (`/pastor`) - ✅ Aprimorado com dados reais (21/11/2025)
 - Dashboard do Tesoureiro (`/treasurer`)
 - Dashboard do Diácono (`/deacon`)
 - Dashboard LGPD (`/lgpd`)
 
-### 11. ✅ Sistema de Audit Logs
+### 13. ✅ Sistema de Audit Logs
 **Status:** Completo e Funcionando
 
 **Funcionalidades:**
@@ -151,7 +191,7 @@
 - Rastreamento total: quem fez, o quê, quando, dados antes/depois
 - Compliance LGPD
 
-### 12. ✅ Infraestrutura
+### 14. ✅ Infraestrutura
 **Status:** Completo
 
 - Banco de dados PostgreSQL configurado
@@ -167,32 +207,24 @@
 
 ### 🔵 Painel do Pastor - Próximas Funcionalidades
 
-### Prioridade 1: Relatórios Pastorais
+### Prioridade 1: Melhorias Futuras dos Relatórios
 **Status:** ⏳ Pendente
 
-**Especificações:**
-- Membros por cargo (Membro, Presbítero, Diácono, Pastor, Seminarista)
-- Membros por status (Ativo, Inativo, Transferido, Em Disciplina)
-- Comungantes vs. Não comungantes
-- Seminaristas por status (Ativo, Em estágio, Concluído)
-- Catecúmenos por etapa (Em andamento, Apto, Concluído)
-- Visitantes por origem (Com igreja, Sem igreja)
-- **Exportação múltipla:** PDF, Excel, CSV
-- Gráficos visuais com Recharts
+**Especificações (v2.0):**
+- Exportação PDF com logotipo IPE
+- Exportação Excel com múltiplas abas
 - Filtros por período (mensal, trimestral, anual)
+- Gráficos de série temporal (crescimento mensal)
+- Comparativo ano-a-ano
 
-### Prioridade 2: Dashboard do Pastor Aprimorado
+### Prioridade 2: Auditoria Pastoral
 **Status:** ⏳ Pendente
 
 **Especificações:**
-- Cards com métricas reais do banco de dados
-- Total de membros ativos vs. inativos
-- Total de seminaristas por status
-- Total de catecúmenos por etapa
-- Total de visitantes da semana/mês
-- Aniversariantes da semana (preview)
-- Gráficos de crescimento
-- Ações rápidas (Novo membro, Novo catecúmeno, etc.)
+- Dashboard de auditoria com logs de todas as ações
+- Filtro por tipo de ação (CRUD)
+- Filtro por tabela
+- Exportação de auditoria para compliance LGPD
 
 ---
 
@@ -283,11 +315,11 @@
 
 ### Progresso Geral
 - **Autenticação:** 100% ✅
-- **Painel do Pastor:** 60% (3/5 módulos principais)
+- **Painel do Pastor:** 75% (6/8 módulos principais: Membros, Usuários, Seminaristas, Catecúmenos, Visitantes, Aniversariantes, Relatórios, Dashboard)
 - **Painel do Tesoureiro:** 20% (1/5 módulos)
 - **Painel do Diácono:** 10% (dashboard básico)
 - **Portal LGPD:** 5% (dashboard básico)
-- **Progresso Total:** ~30%
+- **Progresso Total:** ~40%
 
 ---
 
@@ -310,11 +342,15 @@ client/src/
 ├── App.tsx           ✅ Rotas configuradas
 ├── pages/
 │   ├── login.tsx     ✅ Página de login
-│   ├── pastor/       ✅ 4 páginas implementadas
-│   │   ├── dashboard.tsx
+│   ├── pastor/       ✅ 8 páginas implementadas
+│   │   ├── dashboard.tsx       (340+ linhas, React Query + dados reais)
 │   │   ├── members.tsx
 │   │   ├── users.tsx
-│   │   └── seminarians.tsx (758 linhas)
+│   │   ├── seminarians.tsx     (758 linhas)
+│   │   ├── catechumens.tsx     (671 linhas)
+│   │   ├── visitors.tsx        (331 linhas)
+│   │   ├── birthdays.tsx       (367 linhas)
+│   │   └── reports.tsx         (500+ linhas)
 │   ├── treasurer/    ✅ 2 páginas básicas
 │   ├── deacon/       ✅ 2 páginas básicas
 │   └── lgpd/         ✅ 1 página básica
