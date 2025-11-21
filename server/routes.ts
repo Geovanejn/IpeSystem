@@ -249,7 +249,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     memberId: z.string().optional(),
   });
 
-  app.get("/api/users", async (req, res) => {
+  app.get("/api/users", requireRole("pastor"), async (req, res) => {
     try {
       const users = await storage.getUsers();
       
@@ -263,15 +263,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/users", async (req, res) => {
+  app.post("/api/users", requireRole("pastor"), async (req, res) => {
     try {
-      const sessionId = req.headers.authorization?.replace("Bearer ", "");
-      const session = sessionId ? getSession(sessionId) : null;
-      
-      if (!session) {
-        return res.status(401).json({ error: "Unauthorized" });
-      }
-
+      const session = (req as any).session;
       const validated = createUserSchema.parse(req.body);
       
       // Hash da senha
@@ -310,15 +304,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/users/:id", async (req, res) => {
+  app.put("/api/users/:id", requireRole("pastor"), async (req, res) => {
     try {
-      const sessionId = req.headers.authorization?.replace("Bearer ", "");
-      const session = sessionId ? getSession(sessionId) : null;
-      
-      if (!session) {
-        return res.status(401).json({ error: "Unauthorized" });
-      }
-
+      const session = (req as any).session;
       const validated = updateUserSchema.parse(req.body);
       
       // Buscar usuário antes da atualização
@@ -382,15 +370,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/users/:id", async (req, res) => {
+  app.delete("/api/users/:id", requireRole("pastor"), async (req, res) => {
     try {
-      const sessionId = req.headers.authorization?.replace("Bearer ", "");
-      const session = sessionId ? getSession(sessionId) : null;
+      const session = (req as any).session;
       
-      if (!session) {
-        return res.status(401).json({ error: "Unauthorized" });
-      }
-
       // Buscar usuário antes da exclusão
       const userBefore = await storage.getUser(req.params.id);
       
