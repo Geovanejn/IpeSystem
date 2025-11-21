@@ -112,14 +112,16 @@ export default function LGPDMyDataPage() {
     );
   }
 
-  const maskCPF = (cpf?: string) => {
-    if (!cpf || !showSensitiveData) return "***.***.***-**";
-    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+  const maskCPF = (cpf?: string): string | undefined => {
+    if (!cpf) return undefined; // No data available
+    if (!showSensitiveData) return "***.***.***-**"; // Data exists but hidden
+    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4"); // Show formatted
   };
 
-  const maskPhone = (phone?: string) => {
-    if (!phone || !showSensitiveData) return "(***) *****-****";
-    return phone;
+  const maskPhone = (phone?: string): string | undefined => {
+    if (!phone) return undefined; // No data available
+    if (!showSensitiveData) return "(***) *****-****"; // Data exists but hidden
+    return phone; // Show as is
   };
 
   return (
