@@ -50,6 +50,12 @@ router.post("/visitors", requireRole("deacon"), async (req, res) => {
 
 router.put("/visitors/:id", requireRole("deacon"), async (req, res) => {
   try {
+    const visitorBefore = await storage.getVisitor(req.params.id);
+    
+    if (!visitorBefore) {
+      return res.status(404).json({ error: "Visitor not found" });
+    }
+    
     const validated = insertVisitorSchema.partial().parse(req.body);
     const visitor = await storage.updateVisitor(req.params.id, validated);
     
@@ -68,6 +74,12 @@ router.put("/visitors/:id", requireRole("deacon"), async (req, res) => {
 
 router.delete("/visitors/:id", requireRole("deacon"), async (req, res) => {
   try {
+    const visitorBefore = await storage.getVisitor(req.params.id);
+    
+    if (!visitorBefore) {
+      return res.status(404).json({ error: "Visitor not found" });
+    }
+    
     const success = await storage.deleteVisitor(req.params.id);
     
     if (!success) {
@@ -108,6 +120,12 @@ router.post("/diaconal-help", requireRole("deacon"), async (req, res) => {
 
 router.patch("/diaconal-help/:id", requireRole("deacon"), async (req, res) => {
   try {
+    const helpBefore = await storage.getDiaconalHelp(req.params.id);
+    
+    if (!helpBefore) {
+      return res.status(404).json({ error: "Diaconal help not found" });
+    }
+    
     const validated = insertDiaconalHelpSchema.partial().parse(req.body);
     const help = await storage.updateDiaconalHelp(req.params.id, validated);
     
@@ -126,6 +144,12 @@ router.patch("/diaconal-help/:id", requireRole("deacon"), async (req, res) => {
 
 router.delete("/diaconal-help/:id", requireRole("deacon"), async (req, res) => {
   try {
+    const helpBefore = await storage.getDiaconalHelp(req.params.id);
+    
+    if (!helpBefore) {
+      return res.status(404).json({ error: "Diaconal help not found" });
+    }
+    
     const success = await storage.deleteDiaconalHelp(req.params.id);
     
     if (!success) {
@@ -178,6 +202,12 @@ router.post("/bulletins", requireRole("deacon"), async (req, res) => {
 
 router.put("/bulletins/:id", requireRole("deacon"), async (req, res) => {
   try {
+    const bulletinBefore = await storage.getBulletin(req.params.id);
+    
+    if (!bulletinBefore) {
+      return res.status(404).json({ error: "Bulletin not found" });
+    }
+    
     const validated = insertBulletinSchema.partial().parse(req.body);
     const bulletin = await storage.updateBulletin(req.params.id, validated);
     
@@ -196,6 +226,12 @@ router.put("/bulletins/:id", requireRole("deacon"), async (req, res) => {
 
 router.delete("/bulletins/:id", requireRole("deacon"), async (req, res) => {
   try {
+    const bulletinBefore = await storage.getBulletin(req.params.id);
+    
+    if (!bulletinBefore) {
+      return res.status(404).json({ error: "Bulletin not found" });
+    }
+    
     const success = await storage.deleteBulletin(req.params.id);
     
     if (!success) {

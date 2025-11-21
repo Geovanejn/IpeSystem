@@ -122,6 +122,12 @@ router.post("/lgpd-requests", requireRole("pastor", "treasurer", "deacon"), asyn
 
 router.put("/lgpd-requests/:id", requireRole("pastor", "treasurer", "deacon"), async (req, res) => {
   try {
+    const requestBefore = await storage.getLgpdRequest(req.params.id);
+    
+    if (!requestBefore) {
+      return res.status(404).json({ error: "Request not found" });
+    }
+    
     const validated = insertLgpdRequestSchema.partial().parse(req.body);
     const request = await storage.updateLgpdRequest(req.params.id, validated);
     
