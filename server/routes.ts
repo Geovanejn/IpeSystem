@@ -484,7 +484,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // ✅ CRIAÇÃO AUTOMÁTICA DE MEMBRO ao marcar como "concluído"
-      if (validated.stage === "concluido" && originalCatechumen.stage !== "concluido") {
+      const isTransitioningToConcluded = validated.stage === "concluido" && originalCatechumen.stage !== "concluido";
+      
+      if (isTransitioningToConcluded) {
         // Criar membro com dados básicos do catecúmeno
         const admissionDate = catechumen.expectedProfessionDate || new Date().toISOString().split('T')[0];
         
@@ -520,13 +522,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
         }
 
+        console.log(`✅ [CATECHUMEN CONVERSION] ${catechumen.fullName} → Member created (ID: ${newMember.id})`);
+
         // Retornar catecúmeno atualizado com info do membro criado
-        res.json({ 
+        const responseData = {
           ...catechumen, 
           memberCreated: true, 
           memberId: newMember.id,
           memberName: newMember.fullName 
-        });
+        };
+        
+        res.json(responseData);
       } else {
         res.json(catechumen);
       }
