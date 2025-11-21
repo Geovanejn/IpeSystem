@@ -23,6 +23,7 @@ The user interface prioritizes the IPE brand identity with a specific color sche
 
 ### Feature Specifications
 - **Pastor Panel**: Members, Seminarians, Catechumens, Visitors, Users Management, Pastoral Reports, Birthdays/Anniversaries.
+  - **Conversão Automática de Catecúmenos**: Quando um catecúmeno é marcado como "concluído", o sistema automaticamente cria um novo membro com status "comungante" e dados básicos, incluindo notas pastorais indicando que precisa completar as informações pessoais.
 - **Treasurer Panel**: Tithes, Offerings, Bookstore Sales, Loans, Expenses Management, Financial Reports.
 - **Deacon Panel**: Visitors Management, Diaconal Help, Bulletin Creation.
 - **LGPD Portal**: Data Export, Data Correction Requests, Consents Management, Deletion Requests.
@@ -47,10 +48,16 @@ O sistema foi populado com dados realistas e completos para teste efetivo de tod
 
 ### Como Popular o Banco de Dados
 
-Execute o seed para criar todos os dados de teste:
+**Dados completos (recomendado):**
 ```bash
 npx tsx server/seed.ts
 ```
+
+**Dados de teste rápido (apenas para validação):**
+```bash
+npx tsx server/seed-test.ts
+```
+Cria: 1 pastor, 4 membros, 3 catecúmenos para testar conversão automática.
 
 ### Credenciais de Acesso
 
@@ -121,3 +128,12 @@ npx tsx server/seed.ts
 - Acesse Portal LGPD
 - Consulte seus dados
 - Gerencie consentimentos
+
+## Recent Changes
+
+### 21/11/2025 - Correções LSP e Validação de Conversão de Catecúmenos
+- ✅ Corrigidos 20 erros LSP no `server/routes.ts` relacionados a campos renomeados no schema
+- ✅ Atualizado mapeamento de campos em offerings, bookstore sales, visitors e LGPD consents
+- ✅ Testada e validada funcionalidade de conversão automática de catecúmeno para membro
+- ✅ Criado `server/seed-test.ts` para testes rápidos de conversão
+- ✅ Verificação end-to-end confirmou que marcar catecúmeno como "concluído" cria membro automaticamente com dados placeholder e notas pastorais
