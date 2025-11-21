@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, integer, boolean, timestamp, decimal, date, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, integer, boolean, timestamp, decimal, date, pgEnum, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { relations } from "drizzle-orm";
@@ -43,7 +43,11 @@ export const users = pgTable("users", {
   visitorId: varchar("visitor_id").references(() => visitors.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+}, (table) => ({
+  roleIdx: index("users_role_idx").on(table.role),
+  memberIdIdx: index("users_member_id_idx").on(table.memberId),
+  visitorIdIdx: index("users_visitor_id_idx").on(table.visitorId),
+}));
 
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -98,7 +102,13 @@ export const members = pgTable("members", {
   
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+}, (table) => ({
+  fullNameIdx: index("members_full_name_idx").on(table.fullName),
+  emailIdx: index("members_email_idx").on(table.email),
+  statusIdx: index("members_status_idx").on(table.memberStatus),
+  communionStatusIdx: index("members_communion_status_idx").on(table.communionStatus),
+  ecclesiasticalRoleIdx: index("members_ecclesiastical_role_idx").on(table.ecclesiasticalRole),
+}));
 
 export const insertMemberSchema = createInsertSchema(members).omit({
   id: true,
@@ -124,7 +134,10 @@ export const seminarians = pgTable("seminarians", {
   notes: text("notes"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+}, (table) => ({
+  statusIdx: index("seminarians_status_idx").on(table.status),
+  institutionIdx: index("seminarians_institution_idx").on(table.institution),
+}));
 
 export const insertSeminarianSchema = createInsertSchema(seminarians).omit({
   id: true,
@@ -149,7 +162,10 @@ export const catechumens = pgTable("catechumens", {
   notes: text("notes"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+}, (table) => ({
+  professorIdIdx: index("catechumens_professor_id_idx").on(table.professorId),
+  stageIdx: index("catechumens_stage_idx").on(table.stage),
+}));
 
 export const insertCatechumenSchema = createInsertSchema(catechumens).omit({
   id: true,
@@ -178,7 +194,10 @@ export const visitors = pgTable("visitors", {
   lgpdConsentUrl: text("lgpd_consent_url").notNull(), // Obrigatório
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+}, (table) => ({
+  invitedByMemberIdIdx: index("visitors_invited_by_member_id_idx").on(table.invitedByMemberId),
+  firstVisitDateIdx: index("visitors_first_visit_date_idx").on(table.firstVisitDate),
+}));
 
 export const insertVisitorSchema = createInsertSchema(visitors).omit({
   id: true,
@@ -203,7 +222,10 @@ export const tithes = pgTable("tithes", {
   receiptUrl: text("receipt_url"), // Opcional
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+}, (table) => ({
+  memberIdIdx: index("tithes_member_id_idx").on(table.memberId),
+  dateIdx: index("tithes_date_idx").on(table.date),
+}));
 
 export const insertTitheSchema = createInsertSchema(tithes).omit({
   id: true,
@@ -227,7 +249,10 @@ export const offerings = pgTable("offerings", {
   receiptUrl: text("receipt_url"), // Opcional
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+}, (table) => ({
+  dateIdx: index("offerings_date_idx").on(table.date),
+  typeIdx: index("offerings_type_idx").on(table.type),
+}));
 
 export const insertOfferingSchema = createInsertSchema(offerings).omit({
   id: true,
@@ -254,7 +279,11 @@ export const bookstoreSales = pgTable("bookstore_sales", {
   receiptUrl: text("receipt_url").notNull(), // Obrigatório
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+}, (table) => ({
+  dateIdx: index("bookstore_sales_date_idx").on(table.date),
+  buyerMemberIdIdx: index("bookstore_sales_buyer_member_id_idx").on(table.buyerMemberId),
+  buyerVisitorIdIdx: index("bookstore_sales_buyer_visitor_id_idx").on(table.buyerVisitorId),
+}));
 
 export const insertBookstoreSaleSchema = createInsertSchema(bookstoreSales).omit({
   id: true,
@@ -305,7 +334,11 @@ export const expenses = pgTable("expenses", {
   installmentNumber: integer("installment_number"), // Número da parcela se aplicável
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+}, (table) => ({
+  dateIdx: index("expenses_date_idx").on(table.date),
+  categoryIdx: index("expenses_category_idx").on(table.category),
+  loanIdIdx: index("expenses_loan_id_idx").on(table.loanId),
+}));
 
 export const insertExpenseSchema = createInsertSchema(expenses).omit({
   id: true,
@@ -331,7 +364,11 @@ export const diaconalHelp = pgTable("diaconal_help", {
   expenseId: varchar("expense_id").references(() => expenses.id), // Gerado automaticamente
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+}, (table) => ({
+  memberIdIdx: index("diaconal_help_member_id_idx").on(table.memberId),
+  dateIdx: index("diaconal_help_date_idx").on(table.date),
+  typeIdx: index("diaconal_help_type_idx").on(table.type),
+}));
 
 export const insertDiaconalHelpSchema = createInsertSchema(diaconalHelp).omit({
   id: true,
@@ -386,7 +423,10 @@ export const bulletins = pgTable("bulletins", {
   published: boolean("published").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+}, (table) => ({
+  dateIdx: index("bulletins_date_idx").on(table.date),
+  publishedIdx: index("bulletins_published_idx").on(table.published),
+}));
 
 export const insertBulletinSchema = createInsertSchema(bulletins).omit({
   id: true,
@@ -411,7 +451,10 @@ export const lgpdConsents = pgTable("lgpd_consents", {
   documentUrl: text("document_url"), // URL do termo assinado
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+}, (table) => ({
+  memberIdIdx: index("lgpd_consents_member_id_idx").on(table.memberId),
+  visitorIdIdx: index("lgpd_consents_visitor_id_idx").on(table.visitorId),
+}));
 
 export const insertLgpdConsentSchema = createInsertSchema(lgpdConsents).omit({
   id: true,
@@ -438,7 +481,11 @@ export const lgpdRequests = pgTable("lgpd_requests", {
   notes: text("notes"), // Notas do pastor
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+}, (table) => ({
+  memberIdIdx: index("lgpd_requests_member_id_idx").on(table.memberId),
+  visitorIdIdx: index("lgpd_requests_visitor_id_idx").on(table.visitorId),
+  statusIdx: index("lgpd_requests_status_idx").on(table.status),
+}));
 
 export const insertLgpdRequestSchema = createInsertSchema(lgpdRequests).omit({
   id: true,
@@ -463,7 +510,12 @@ export const auditLogs = pgTable("audit_logs", {
   changesAfter: text("changes_after"), // JSON
   ipAddress: text("ip_address"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+}, (table) => ({
+  userIdIdx: index("audit_logs_user_id_idx").on(table.userId),
+  tableNameIdx: index("audit_logs_table_name_idx").on(table.tableName),
+  createdAtIdx: index("audit_logs_created_at_idx").on(table.createdAt),
+  actionIdx: index("audit_logs_action_idx").on(table.action),
+}));
 
 export const insertAuditLogSchema = createInsertSchema(auditLogs).omit({
   id: true,
