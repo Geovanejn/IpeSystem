@@ -543,7 +543,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // SEMINARIANS ROUTES (Pastor)
   // ============================================
   
-  app.get("/api/seminarians", async (req, res) => {
+  app.get("/api/seminarians", requireRole("pastor"), async (req, res) => {
     try {
       const seminarians = await storage.getSeminarians();
       res.json(seminarians);
@@ -552,7 +552,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/seminarians", async (req, res) => {
+  app.post("/api/seminarians", requireRole("pastor"), async (req, res) => {
     try {
       const validated = insertSeminarianSchema.parse(req.body);
       const seminarian = await storage.createSeminarian(validated);
@@ -565,7 +565,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/seminarians/:id", async (req, res) => {
+  app.put("/api/seminarians/:id", requireRole("pastor"), async (req, res) => {
     try {
       const validated = insertSeminarianSchema.partial().parse(req.body);
       const seminarian = await storage.updateSeminarian(req.params.id, validated);
@@ -583,7 +583,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/seminarians/:id", async (req, res) => {
+  app.delete("/api/seminarians/:id", requireRole("pastor"), async (req, res) => {
     try {
       const success = await storage.deleteSeminarian(req.params.id);
       
@@ -601,7 +601,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // CATECHUMENS ROUTES (Pastor)
   // ============================================
   
-  app.get("/api/catechumens", async (req, res) => {
+  app.get("/api/catechumens", requireRole("pastor"), async (req, res) => {
     try {
       res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
       res.setHeader("Pragma", "no-cache");
@@ -613,7 +613,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/catechumens", async (req, res) => {
+  app.post("/api/catechumens", requireRole("pastor"), async (req, res) => {
     try {
       const validated = insertCatechumenSchema.parse(req.body);
       const catechumen = await storage.createCatechumen(validated);
@@ -672,7 +672,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/catechumens/:id", async (req, res) => {
+  app.put("/api/catechumens/:id", requireRole("pastor"), async (req, res) => {
     try {
       const validated = insertCatechumenSchema.partial().parse(req.body);
       
@@ -749,7 +749,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/catechumens/:id", async (req, res) => {
+  app.delete("/api/catechumens/:id", requireRole("pastor"), async (req, res) => {
     try {
       const success = await storage.deleteCatechumen(req.params.id);
       
