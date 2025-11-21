@@ -224,11 +224,6 @@ Tentativa 7: HTTP 429 - "Muitas tentativas de login..."
 **Prioridade:** 🔴 CRÍTICO  
 **Tempo estimado:** 4 horas
 
-### Correção #4: CSRF Protection
-**Status:** 🔄 Pendente  
-**Prioridade:** 🔴 CRÍTICO  
-**Tempo estimado:** 4 horas
-
 ### Correção #5: Autorização por Role
 **Status:** 🔄 Pendente  
 **Prioridade:** 🔴 CRÍTICO  
