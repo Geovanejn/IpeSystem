@@ -4,6 +4,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
+import { AuthProvider } from "@/contexts/auth-context";
+import { ProtectedRoute } from "@/components/protected-route";
 import { AppLayout } from "@/components/app-layout";
 import NotFound from "@/pages/not-found";
 import Login from "@/pages/login";
@@ -40,13 +42,6 @@ import LGPDExport from "@/pages/lgpd/export";
 import LGPDRequests from "@/pages/lgpd/requests";
 import LGPDConsents from "@/pages/lgpd/consents";
 
-// TODO: Implementar autenticação real
-const mockAuth = {
-  isAuthenticated: true,
-  role: "pastor" as const, // Simular role para desenvolvimento
-  userName: "Pastor João Silva",
-};
-
 function Router() {
   return (
     <Switch>
@@ -54,179 +49,227 @@ function Router() {
       <Route path="/" component={Login} />
       <Route path="/login" component={Login} />
 
-      {/* Pastor Routes */}
+      {/* Pastor Routes - Protected */}
       <Route path="/pastor">
         {() => (
-          <AppLayout role="pastor" userName={mockAuth.userName}>
-            <PastorDashboard />
-          </AppLayout>
+          <ProtectedRoute allowedRoles={["pastor"]}>
+            <AppLayout role="pastor">
+              <PastorDashboard />
+            </AppLayout>
+          </ProtectedRoute>
         )}
       </Route>
       <Route path="/pastor/members">
         {() => (
-          <AppLayout role="pastor" userName={mockAuth.userName}>
-            <PastorMembers />
-          </AppLayout>
+          <ProtectedRoute allowedRoles={["pastor"]}>
+            <AppLayout role="pastor">
+              <PastorMembers />
+            </AppLayout>
+          </ProtectedRoute>
         )}
       </Route>
       <Route path="/pastor/seminarians">
         {() => (
-          <AppLayout role="pastor" userName={mockAuth.userName}>
-            <PastorSeminarians />
-          </AppLayout>
+          <ProtectedRoute allowedRoles={["pastor"]}>
+            <AppLayout role="pastor">
+              <PastorSeminarians />
+            </AppLayout>
+          </ProtectedRoute>
         )}
       </Route>
       <Route path="/pastor/catechumens">
         {() => (
-          <AppLayout role="pastor" userName={mockAuth.userName}>
-            <PastorCatechumens />
-          </AppLayout>
+          <ProtectedRoute allowedRoles={["pastor"]}>
+            <AppLayout role="pastor">
+              <PastorCatechumens />
+            </AppLayout>
+          </ProtectedRoute>
         )}
       </Route>
       <Route path="/pastor/visitors">
         {() => (
-          <AppLayout role="pastor" userName={mockAuth.userName}>
-            <PastorVisitors />
-          </AppLayout>
+          <ProtectedRoute allowedRoles={["pastor"]}>
+            <AppLayout role="pastor">
+              <PastorVisitors />
+            </AppLayout>
+          </ProtectedRoute>
         )}
       </Route>
       <Route path="/pastor/users">
         {() => (
-          <AppLayout role="pastor" userName={mockAuth.userName}>
-            <PastorUsers />
-          </AppLayout>
+          <ProtectedRoute allowedRoles={["pastor"]}>
+            <AppLayout role="pastor">
+              <PastorUsers />
+            </AppLayout>
+          </ProtectedRoute>
         )}
       </Route>
       <Route path="/pastor/birthdays">
         {() => (
-          <AppLayout role="pastor" userName={mockAuth.userName}>
-            <PastorBirthdays />
-          </AppLayout>
+          <ProtectedRoute allowedRoles={["pastor"]}>
+            <AppLayout role="pastor">
+              <PastorBirthdays />
+            </AppLayout>
+          </ProtectedRoute>
         )}
       </Route>
       <Route path="/pastor/reports">
         {() => (
-          <AppLayout role="pastor" userName={mockAuth.userName}>
-            <PastorReports />
-          </AppLayout>
+          <ProtectedRoute allowedRoles={["pastor"]}>
+            <AppLayout role="pastor">
+              <PastorReports />
+            </AppLayout>
+          </ProtectedRoute>
         )}
       </Route>
 
-      {/* Treasurer Routes */}
+      {/* Treasurer Routes - Protected */}
       <Route path="/treasurer">
         {() => (
-          <AppLayout role="treasurer" userName="Tesoureiro Maria Santos">
-            <TreasurerDashboard />
-          </AppLayout>
+          <ProtectedRoute allowedRoles={["treasurer"]}>
+            <AppLayout role="treasurer">
+              <TreasurerDashboard />
+            </AppLayout>
+          </ProtectedRoute>
         )}
       </Route>
       <Route path="/treasurer/tithes">
         {() => (
-          <AppLayout role="treasurer" userName="Tesoureiro Maria Santos">
-            <TreasurerTithes />
-          </AppLayout>
+          <ProtectedRoute allowedRoles={["treasurer"]}>
+            <AppLayout role="treasurer">
+              <TreasurerTithes />
+            </AppLayout>
+          </ProtectedRoute>
         )}
       </Route>
       <Route path="/treasurer/offerings">
         {() => (
-          <AppLayout role="treasurer" userName="Tesoureiro Maria Santos">
-            <TreasurerOfferings />
-          </AppLayout>
+          <ProtectedRoute allowedRoles={["treasurer"]}>
+            <AppLayout role="treasurer">
+              <TreasurerOfferings />
+            </AppLayout>
+          </ProtectedRoute>
         )}
       </Route>
       <Route path="/treasurer/bookstore">
         {() => (
-          <AppLayout role="treasurer" userName="Tesoureiro Maria Santos">
-            <TreasurerBookstore />
-          </AppLayout>
+          <ProtectedRoute allowedRoles={["treasurer"]}>
+            <AppLayout role="treasurer">
+              <TreasurerBookstore />
+            </AppLayout>
+          </ProtectedRoute>
         )}
       </Route>
       <Route path="/treasurer/loans">
         {() => (
-          <AppLayout role="treasurer" userName="Tesoureiro Maria Santos">
-            <TreasurerLoans />
-          </AppLayout>
+          <ProtectedRoute allowedRoles={["treasurer"]}>
+            <AppLayout role="treasurer">
+              <TreasurerLoans />
+            </AppLayout>
+          </ProtectedRoute>
         )}
       </Route>
       <Route path="/treasurer/expenses">
         {() => (
-          <AppLayout role="treasurer" userName="Tesoureiro Maria Santos">
-            <TreasurerExpenses />
-          </AppLayout>
+          <ProtectedRoute allowedRoles={["treasurer"]}>
+            <AppLayout role="treasurer">
+              <TreasurerExpenses />
+            </AppLayout>
+          </ProtectedRoute>
         )}
       </Route>
       <Route path="/treasurer/reports">
         {() => (
-          <AppLayout role="treasurer" userName="Tesoureiro Maria Santos">
-            <TreasurerFinancialReports />
-          </AppLayout>
+          <ProtectedRoute allowedRoles={["treasurer"]}>
+            <AppLayout role="treasurer">
+              <TreasurerFinancialReports />
+            </AppLayout>
+          </ProtectedRoute>
         )}
       </Route>
 
-      {/* Deacon Routes */}
+      {/* Deacon Routes - Protected */}
       <Route path="/deacon">
         {() => (
-          <AppLayout role="deacon" userName="Diácono Pedro Oliveira">
-            <DeaconDashboard />
-          </AppLayout>
+          <ProtectedRoute allowedRoles={["deacon"]}>
+            <AppLayout role="deacon">
+              <DeaconDashboard />
+            </AppLayout>
+          </ProtectedRoute>
         )}
       </Route>
       <Route path="/deacon/visitors">
         {() => (
-          <AppLayout role="deacon" userName="Diácono Pedro Oliveira">
-            <DeaconVisitors />
-          </AppLayout>
+          <ProtectedRoute allowedRoles={["deacon"]}>
+            <AppLayout role="deacon">
+              <DeaconVisitors />
+            </AppLayout>
+          </ProtectedRoute>
         )}
       </Route>
       <Route path="/deacon/help">
         {() => (
-          <AppLayout role="deacon" userName="Diácono Pedro Oliveira">
-            <DeaconHelp />
-          </AppLayout>
+          <ProtectedRoute allowedRoles={["deacon"]}>
+            <AppLayout role="deacon">
+              <DeaconHelp />
+            </AppLayout>
+          </ProtectedRoute>
         )}
       </Route>
       <Route path="/deacon/bulletin">
         {() => (
-          <AppLayout role="deacon" userName="Diácono Pedro Oliveira">
-            <DeaconBulletin />
-          </AppLayout>
+          <ProtectedRoute allowedRoles={["deacon"]}>
+            <AppLayout role="deacon">
+              <DeaconBulletin />
+            </AppLayout>
+          </ProtectedRoute>
         )}
       </Route>
 
-      {/* LGPD Routes */}
+      {/* LGPD Routes - Protected (members and visitors) */}
       <Route path="/lgpd">
         {() => (
-          <AppLayout role="member" userName="Membro Carlos Costa">
-            <LGPDDashboard />
-          </AppLayout>
+          <ProtectedRoute allowedRoles={["member", "visitor"]}>
+            <AppLayout role="member">
+              <LGPDDashboard />
+            </AppLayout>
+          </ProtectedRoute>
         )}
       </Route>
       <Route path="/lgpd/my-data">
         {() => (
-          <AppLayout role="member" userName="Membro Carlos Costa">
-            <LGPDMyData />
-          </AppLayout>
+          <ProtectedRoute allowedRoles={["member", "visitor"]}>
+            <AppLayout role="member">
+              <LGPDMyData />
+            </AppLayout>
+          </ProtectedRoute>
         )}
       </Route>
       <Route path="/lgpd/export">
         {() => (
-          <AppLayout role="member" userName="Membro Carlos Costa">
-            <LGPDExport />
-          </AppLayout>
+          <ProtectedRoute allowedRoles={["member", "visitor"]}>
+            <AppLayout role="member">
+              <LGPDExport />
+            </AppLayout>
+          </ProtectedRoute>
         )}
       </Route>
       <Route path="/lgpd/requests">
         {() => (
-          <AppLayout role="member" userName="Membro Carlos Costa">
-            <LGPDRequests />
-          </AppLayout>
+          <ProtectedRoute allowedRoles={["member", "visitor"]}>
+            <AppLayout role="member">
+              <LGPDRequests />
+            </AppLayout>
+          </ProtectedRoute>
         )}
       </Route>
       <Route path="/lgpd/consents">
         {() => (
-          <AppLayout role="member" userName="Membro Carlos Costa">
-            <LGPDConsents />
-          </AppLayout>
+          <ProtectedRoute allowedRoles={["member", "visitor"]}>
+            <AppLayout role="member">
+              <LGPDConsents />
+            </AppLayout>
+          </ProtectedRoute>
         )}
       </Route>
 
@@ -236,24 +279,17 @@ function Router() {
   );
 }
 
-function PlaceholderPage({ title }: { title: string }) {
-  return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold text-foreground mb-2">{title}</h1>
-      <p className="text-muted-foreground">Esta página está em desenvolvimento.</p>
-    </div>
-  );
-}
-
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="light" storageKey="ipe-theme">
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
-      </ThemeProvider>
+      <AuthProvider>
+        <ThemeProvider defaultTheme="light" storageKey="ipe-theme">
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+          </TooltipProvider>
+        </ThemeProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

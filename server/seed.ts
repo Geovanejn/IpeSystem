@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { users, members } from "@shared/schema";
+import { users, members, visitors } from "@shared/schema";
 import { hashPassword } from "./auth";
 
 async function seed() {
@@ -9,7 +9,7 @@ async function seed() {
     // Criar membros primeiro (para vincular aos usuários)
     console.log("📝 Criando membros de exemplo...");
     
-    const [pastor, tesoureiro, diacono] = await db.insert(members).values([
+    const [pastor, tesoureiro, diacono, membro, membroLgpd] = await db.insert(members).values([
       {
         fullName: "Pastor João Silva",
         gender: "masculino",
@@ -63,11 +63,63 @@ async function seed() {
         admissionDate: "2018-07-20",
         lgpdConsentUrl: "https://example.com/consent-diacono.pdf",
       },
+      {
+        fullName: "Carlos Costa",
+        gender: "masculino",
+        birthDate: "1990-03-10",
+        maritalStatus: "casado",
+        primaryPhone: "(11) 98765-9999",
+        email: "membro@ipe.com",
+        address: "Rua das Acácias",
+        addressNumber: "321",
+        neighborhood: "Jardim das Flores",
+        zipCode: "04567-890",
+        communionStatus: "comungante",
+        ecclesiasticalRole: "membro",
+        memberStatus: "ativo",
+        admissionDate: "2020-02-15",
+        marriageDate: "2015-11-25",
+        lgpdConsentUrl: "https://example.com/consent-membro.pdf",
+      },
+      {
+        fullName: "Ana Silva",
+        gender: "feminino",
+        birthDate: "1992-07-18",
+        maritalStatus: "solteiro",
+        primaryPhone: "(11) 98765-8888",
+        email: "membro2@ipe.com",
+        address: "Avenida Paulista",
+        addressNumber: "1000",
+        neighborhood: "Bela Vista",
+        zipCode: "01310-100",
+        communionStatus: "comungante",
+        ecclesiasticalRole: "membro",
+        memberStatus: "ativo",
+        admissionDate: "2021-05-20",
+        lgpdConsentUrl: "https://example.com/consent-ana.pdf",
+      },
     ]).returning();
 
     console.log("✅ Membros criados com sucesso!");
 
-    // Criar usuários vinculados aos membros
+    // Criar visitantes de exemplo
+    console.log("👤 Criando visitantes de exemplo...");
+    
+    const [visitante1] = await db.insert(visitors).values([
+      {
+        fullName: "João Visitante",
+        phone: "(11) 98765-7777",
+        email: "visitante@example.com",
+        address: "Rua dos Visitantes, 100",
+        firstVisitDate: "2024-01-10",
+        hasChurch: false,
+        lgpdConsentUrl: "https://example.com/consent-visitante.pdf",
+      },
+    ]).returning();
+
+    console.log("✅ Visitantes criados com sucesso!");
+
+    // Criar usuários vinculados aos membros e visitantes
     console.log("👥 Criando usuários de teste...");
     
     const hashedPassword = await hashPassword("senha123");
@@ -91,6 +143,18 @@ async function seed() {
         role: "deacon",
         memberId: diacono.id,
       },
+      {
+        username: "membro",
+        password: hashedPassword,
+        role: "member",
+        memberId: membroLgpd.id,
+      },
+      {
+        username: "visitante",
+        password: hashedPassword,
+        role: "visitor",
+        visitorId: visitante1.id,
+      },
     ]);
 
     console.log("✅ Usuários criados com sucesso!");
@@ -108,6 +172,14 @@ async function seed() {
     console.log("   Username: diacono");
     console.log("   Password: senha123");
     console.log("   URL: /deacon");
+    console.log("\n🟠 MEMBRO:");
+    console.log("   Username: membro");
+    console.log("   Password: senha123");
+    console.log("   URL: /lgpd");
+    console.log("\n🔴 VISITANTE:");
+    console.log("   Username: visitante");
+    console.log("   Password: senha123");
+    console.log("   URL: /lgpd");
     console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
 
     console.log("✨ Seed concluído com sucesso!");

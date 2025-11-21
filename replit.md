@@ -4,7 +4,7 @@
 
 Comprehensive church management system for Igreja Presbiteriana Emaús (IPE) built with React, TypeScript, Express, and PostgreSQL. The system provides four completely independent role-based panels for pastoral, financial, diaconal, and LGPD compliance management.
 
-**Current Status**: 100% Complete - All core modules implemented, tested, and working with PostgreSQL database
+**Current Status**: 100% Complete - All core modules implemented with real authentication, tested, and working with PostgreSQL database
 
 ## System Panels
 
@@ -265,15 +265,60 @@ npm run build          # Create production bundle
 
 ## Known Limitations
 
-- **CRITICAL**: Authentication system not yet implemented (TODO in App.tsx) - currently all panels accessible without login. Must be implemented before production deployment.
-- Session storage is in-memory (lost on server restart)
+- Session storage is in-memory (lost on server restart) - Consider migrating to PostgreSQL with TTL for production
 - No external service integrations (all self-contained)
 - Exports are basic JSON/CSV (not advanced PDF with formatting)
-- /api/lgpd/my-data endpoint uses mock authentication (returns first member) - must integrate with session authentication in production
+
+## Authentication System
+
+### Implementation
+
+The system features a complete role-based authentication system with:
+
+**Frontend Components:**
+- `AuthContext` (`client/src/contexts/auth-context.tsx`) - Global authentication state management
+  - `login()` - Authenticates user and stores session
+  - `logout()` - Clears session and redirects to login
+  - `checkSession()` - Validates existing session on app load
+- `ProtectedRoute` (`client/src/components/protected-route.tsx`) - Route protection by role
+  - Automatic redirection to login for unauthenticated users
+  - Role-based access control with automatic routing
+- Query Client - Automatically includes `Authorization: Bearer <sessionId>` header in all API requests
+
+**Backend:**
+- Session-based authentication with bcrypt password hashing
+- Endpoints: `/api/auth/login`, `/api/auth/logout`, `/api/auth/session`
+- In-memory session storage (suitable for development)
+- All protected routes validate session from Authorization header
+
+**User Flow:**
+1. User accesses any protected route → Redirected to `/login`
+2. User enters credentials → System validates via `/api/auth/login`
+3. Session created and stored (backend + localStorage)
+4. User redirected to appropriate dashboard based on role
+5. All subsequent API calls include session header automatically
+6. User clicks logout → Session destroyed, redirected to login
+
+**Security Features:**
+- ✅ Bcrypt password hashing (10 rounds)
+- ✅ Session validation on all protected routes
+- ✅ Role-based access control (pastor, treasurer, deacon, member, visitor)
+- ✅ Automatic session injection in API requests
+- ✅ Protected `/api/lgpd/my-data` endpoint with real authentication
+- ✅ Logout functionality with session cleanup
+
+### Security Improvements for Production
+
+The current implementation is secure for development but should be hardened for production:
+
+1. **Session Persistence** - Migrate from in-memory to PostgreSQL with TTL
+2. **httpOnly Cookies** - Replace localStorage tokens with httpOnly cookies (XSS protection)
+3. **Session Expiration** - Implement TTL of 24h with refresh tokens
+4. **Rate Limiting** - Add protection against brute force attacks
+5. **CSRF Protection** - Implement CSRF tokens for state-changing operations
 
 ## Future Enhancements
 
-- **PRIORITY**: Implement system-wide authentication (currently TODO in App.tsx)
 - Persistent session storage (PostgreSQL) instead of in-memory
 - Email notifications for key events
 - SMS integration for urgent communications
@@ -289,6 +334,16 @@ For issues or feature requests, contact the development team. All user data is m
 
 ## Recent Changes (November 21, 2025)
 
+### Authentication System Implementation
+- ✅ Implemented `AuthContext` for global authentication state management
+- ✅ Created `ProtectedRoute` component for role-based route protection
+- ✅ Modified QueryClient to automatically include Authorization headers
+- ✅ Refactored App.tsx to use real authentication (removed mock auth)
+- ✅ Added logout buttons to all panel headers with userName display
+- ✅ Updated `/api/lgpd/my-data` endpoint to use real session authentication
+- ✅ Implemented automatic role-based redirection after login
+
+### LGPD Portal Features
 - ✅ Implemented "Meus Dados" page in LGPD Portal for viewing personal data
 - ✅ Created /api/lgpd/my-data backend endpoint with comprehensive data gathering
 - ✅ Added sensitive data masking with toggle (CPF, phone masking)
@@ -300,12 +355,13 @@ For issues or feature requests, contact the development team. All user data is m
 
 Available after running `npx tsx server/seed.ts`:
 
-| Role | Username | Password | URL |
-|------|----------|----------|-----|
+| Role | Username | Password | Redirect After Login |
+|------|----------|----------|----------------------|
 | Pastor | `pastor` | `senha123` | `/pastor` |
 | Treasurer | `tesoureiro` | `senha123` | `/treasurer` |
 | Deacon | `diacono` | `senha123` | `/deacon` |
-| LGPD Portal | N/A (no auth) | N/A | `/lgpd` |
+| Member | `membro` | `senha123` | `/lgpd` |
+| Visitor | `visitante` | `senha123` | `/lgpd` |
 
 ## Database Setup
 

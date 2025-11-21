@@ -1213,66 +1213,113 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // LGPD My Data endpoint - Get user's personal data summary
   app.get("/api/lgpd/my-data", async (req, res) => {
     try {
-      // TODO CRITICAL SECURITY: This endpoint MUST use authenticated session in production
-      // Currently using mock authentication (returns first member) - this is a SECURITY RISK
-      // In production, replace with: const memberId = req.session?.user?.memberId
-      // and verify authentication before allowing access to personal data
-      const members = await storage.getMembers();
-      const member = members[0]; // Mock: get first member - MUST be replaced with auth
+      // Validate session and get authenticated user
+      const sessionId = req.headers.authorization?.replace("Bearer ", "");
+      const session = sessionId ? getSession(sessionId) : null;
       
-      if (!member) {
+      if (!session) {
+        return res.status(401).json({ error: "Não autenticado" });
+      }
+
+      // Verify user has member or visitor role
+      if (!["member", "visitor"].includes(session.role)) {
+        return res.status(403).json({ error: "Acesso negado" });
+      }
+
+      // Get member or visitor data based on session
+      let member = null;
+      let visitor = null;
+
+      if (session.memberId) {
+        const members = await storage.getMembers();
+        member = members.find(m => m.id === session.memberId);
+      } else if (session.visitorId) {
+        const visitors = await storage.getVisitors();
+        visitor = visitors.find(v => v.id === session.visitorId);
+      }
+
+      if (!member && !visitor) {
         return res.status(404).json({ error: "Usuário não encontrado" });
       }
-      
-      // Get financial data
-      const allTithes = await storage.getTithes();
-      const memberTithes = allTithes.filter(t => t.memberId === member.id);
-      
-      const totalTithes = memberTithes.reduce((sum, t) => sum + parseFloat(t.amount), 0);
-      
-      // Get LGPD data
-      const lgpdRequests = await storage.getLgpdRequests(member.id);
-      const lgpdConsents = await storage.getLgpdConsents(member.id);
-      const activeConsents = lgpdConsents.filter(c => c.consentGiven && !c.revokedDate).length;
-      
-      // Get last tithe date
-      const lastTithe = memberTithes.sort((a, b) => 
-        new Date(b.date).getTime() - new Date(a.date).getTime()
-      )[0];
-      
-      // Build response
-      const userData = {
-        personalInfo: {
-          name: member.fullName,
-          email: member.email,
-          phone: member.primaryPhone,
-          cpf: "123.456.789-00", // Mock CPF - would come from member table in production
-          address: `${member.address}, ${member.addressNumber}${member.addressComplement ? `, ${member.addressComplement}` : ''} - ${member.neighborhood}, ${member.zipCode}`,
-          birthDate: member.birthDate,
-          maritalStatus: member.maritalStatus,
-        },
-        churchInfo: {
-          membershipType: member.memberStatus,
-          admissionDate: member.admissionDate,
-          communionStatus: member.communionStatus,
-          officePosition: member.ecclesiasticalRole !== "membro" ? member.ecclesiasticalRole : undefined,
-          departments: [], // Would come from a departments table in production
-        },
-        financialInfo: {
-          totalTithes,
-          totalOfferings: 0, // Offerings are not per-member in the current schema
-          lastTitheDate: lastTithe?.date,
-          lastOfferingDate: undefined,
-        },
-        lgpdInfo: {
-          consentDate: member.admissionDate, // Using admission as consent date
-          consentUrl: member.lgpdConsentUrl,
-          activeConsents,
-          totalRequests: lgpdRequests.length,
-        },
-      };
-      
-      res.json(userData);
+
+      // Build response for member
+      if (member) {
+        // Get financial data for members
+        const allTithes = await storage.getTithes();
+        const memberTithes = allTithes.filter(t => t.memberId === member.id);
+        const totalTithes = memberTithes.reduce((sum, t) => sum + parseFloat(t.amount), 0);
+        
+        // Get LGPD data
+        const lgpdRequests = await storage.getLgpdRequests(member.id);
+        const lgpdConsents = await storage.getLgpdConsents(member.id);
+        const activeConsents = lgpdConsents.filter(c => c.consentGiven && !c.revokedDate).length;
+        
+        // Get last tithe date
+        const lastTithe = memberTithes.sort((a, b) => 
+          new Date(b.date).getTime() - new Date(a.date).getTime()
+        )[0];
+        
+        const userData = {
+          personalInfo: {
+            name: member.fullName,
+            email: member.email,
+            phone: member.primaryPhone,
+            cpf: "123.456.789-00", // Mock CPF - would come from member table in production
+            address: `${member.address}, ${member.addressNumber}${member.addressComplement ? `, ${member.addressComplement}` : ''} - ${member.neighborhood}, ${member.zipCode}`,
+            birthDate: member.birthDate,
+            maritalStatus: member.maritalStatus,
+          },
+          churchInfo: {
+            membershipType: member.memberStatus,
+            admissionDate: member.admissionDate,
+            communionStatus: member.communionStatus,
+            officePosition: member.ecclesiasticalRole !== "membro" ? member.ecclesiasticalRole : undefined,
+            departments: [],
+          },
+          financialInfo: {
+            totalTithes,
+            totalOfferings: 0, // Offerings are not per-member in the current schema
+            lastTitheDate: lastTithe?.date,
+            lastOfferingDate: undefined,
+          },
+          lgpdInfo: {
+            consentDate: member.admissionDate,
+            consentUrl: member.lgpdConsentUrl,
+            activeConsents,
+            totalRequests: lgpdRequests.length,
+          },
+        };
+        
+        return res.json(userData);
+      }
+
+      // Build response for visitor (no financial data)
+      if (visitor) {
+        // Get LGPD data for visitor
+        const lgpdRequests = await storage.getLgpdRequests(visitor.id);
+        
+        const userData = {
+          personalInfo: {
+            name: visitor.fullName,
+            email: visitor.email || "",
+            phone: visitor.primaryPhone,
+            cpf: "",
+            address: "",
+            birthDate: "",
+            maritalStatus: "",
+          },
+          churchInfo: {
+            membershipType: "Visitante",
+            firstVisitDate: visitor.firstVisitDate,
+            lastVisitDate: visitor.lastVisitDate,
+          },
+          lgpdInfo: {
+            totalRequests: lgpdRequests.length,
+          },
+        };
+        
+        return res.json(userData);
+      }
     } catch (error) {
       console.error("Error fetching user data:", error);
       res.status(500).json({ error: "Failed to fetch user data" });
