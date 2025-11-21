@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import { storage } from "./storage";
 import type { User } from "@shared/schema";
 
@@ -46,7 +47,10 @@ export interface AuthSession {
 const sessions = new Map<string, AuthSession>();
 
 export function createSession(user: User): string {
-  const sessionId = `session_${Date.now()}_${Math.random().toString(36).substring(2)}`;
+  // Gera sessionId criptograficamente seguro com 32 bytes (64 caracteres hex)
+  // Mantém prefixo "session_" para compatibilidade com cookies existentes
+  const randomId = crypto.randomBytes(32).toString('hex');
+  const sessionId = `session_${randomId}`;
   
   sessions.set(sessionId, {
     userId: user.id,
