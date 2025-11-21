@@ -36,6 +36,8 @@ import DeaconBulletin from "@/pages/deacon/bulletin";
 // LGPD Pages
 import LGPDDashboard from "@/pages/lgpd/dashboard";
 import LGPDExport from "@/pages/lgpd/export";
+import LGPDRequests from "@/pages/lgpd/requests";
+import LGPDConsents from "@/pages/lgpd/consents";
 
 // TODO: Implementar autenticação real
 const mockAuth = {
@@ -208,7 +210,14 @@ function Router() {
       <Route path="/lgpd/requests">
         {() => (
           <AppLayout role="member" userName="Membro Carlos Costa">
-            <PlaceholderPage title="Minhas Solicitações LGPD" />
+            <LGPDRequests />
+          </AppLayout>
+        )}
+      </Route>
+      <Route path="/lgpd/consents">
+        {() => (
+          <AppLayout role="member" userName="Membro Carlos Costa">
+            <LGPDConsents />
           </AppLayout>
         )}
       </Route>

@@ -1,9 +1,12 @@
-import { Shield, FileText, Download, AlertTriangle } from "lucide-react";
+import { Shield, FileText, Download, AlertTriangle, CheckSquare } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useLocation } from "wouter";
 
 export default function LGPDDashboard() {
+  const [, navigate] = useLocation();
+
   return (
     <div className="p-8 space-y-8">
       <div>
@@ -39,7 +42,7 @@ export default function LGPDDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="hover-elevate transition-all cursor-pointer">
+        <Card className="hover-elevate transition-all cursor-pointer" onClick={() => navigate("/lgpd/export")}>
           <CardHeader>
             <CardTitle className="flex items-center gap-3">
               <Download className="h-5 w-5 text-accent" />
@@ -56,7 +59,7 @@ export default function LGPDDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="hover-elevate transition-all cursor-pointer">
+        <Card className="hover-elevate transition-all cursor-pointer" onClick={() => navigate("/lgpd/requests")}>
           <CardHeader>
             <CardTitle className="flex items-center gap-3">
               <AlertTriangle className="h-5 w-5 text-destructive" />
@@ -69,6 +72,23 @@ export default function LGPDDashboard() {
             </p>
             <Button variant="outline" className="w-full" data-testid="button-requests">
               Minhas Solicitações
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="hover-elevate transition-all cursor-pointer" onClick={() => navigate("/lgpd/consents")}>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-3">
+              <CheckSquare className="h-5 w-5 text-green-600" />
+              Consentimentos
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Gerencie seus consentimentos para tratamento de dados
+            </p>
+            <Button variant="outline" className="w-full" data-testid="button-consents">
+              Gerenciar Consentimentos
             </Button>
           </CardContent>
         </Card>
