@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -90,6 +90,13 @@ export default function CatechumensPage() {
     },
   });
 
+  // Auto-popular professorId quando members carregar
+  useEffect(() => {
+    if (defaultPastorId && !createForm.getValues("professorId")) {
+      createForm.setValue("professorId", defaultPastorId);
+    }
+  }, [defaultPastorId, createForm]);
+
   // Mutations
   const createMutation = useMutation({
     mutationFn: async (data: CreateCatechumenFormValues) => {
@@ -103,7 +110,14 @@ export default function CatechumensPage() {
         description: "O catecúmeno foi cadastrado com sucesso.",
       });
       setCreateDialogOpen(false);
-      createForm.reset();
+      createForm.reset({
+        fullName: "",
+        startDate: new Date().toISOString().split('T')[0],
+        expectedProfessionDate: "",
+        stage: "em_andamento",
+        professorId: defaultPastorId,
+        notes: "",
+      });
     },
     onError: (error: any) => {
       toast({
@@ -136,7 +150,14 @@ export default function CatechumensPage() {
       }
       
       setEditDialogOpen(false);
-      editForm.reset();
+      editForm.reset({
+        fullName: "",
+        startDate: "",
+        expectedProfessionDate: "",
+        stage: "em_andamento",
+        professorId: defaultPastorId,
+        notes: "",
+      });
       setSelectedCatechumen(null);
     },
     onError: (error: any) => {
@@ -349,11 +370,11 @@ export default function CatechumensPage() {
                         <Select 
                           onValueChange={field.onChange} 
                           value={field.value}
-                          disabled={pastors.length === 0}
+                          disabled={true}
                         >
                           <FormControl>
                             <SelectTrigger data-testid="select-professor">
-                              <SelectValue placeholder="Selecione o pastor" />
+                              <SelectValue placeholder="Carregando..." />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -365,7 +386,7 @@ export default function CatechumensPage() {
                           </SelectContent>
                         </Select>
                         <FormDescription>
-                          Normalmente o Pastor da igreja
+                          Campo bloqueado - automaticamente preenchido com o Pastor
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -627,11 +648,11 @@ export default function CatechumensPage() {
                       <Select 
                         onValueChange={field.onChange} 
                         value={field.value}
-                        disabled={pastors.length === 0}
+                        disabled={true}
                       >
                         <FormControl>
                           <SelectTrigger data-testid="select-edit-professor">
-                            <SelectValue placeholder="Selecione o pastor" />
+                            <SelectValue placeholder="Carregando..." />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -642,6 +663,9 @@ export default function CatechumensPage() {
                           ))}
                         </SelectContent>
                       </Select>
+                      <FormDescription>
+                        Campo bloqueado - sempre o Pastor responsável
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
