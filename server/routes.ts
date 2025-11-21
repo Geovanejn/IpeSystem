@@ -767,7 +767,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // VISITORS ROUTES (Deacon - CRUD, Pastor - Read Only)
   // ============================================
   
-  app.get("/api/visitors", async (req, res) => {
+  app.get("/api/visitors", requireRole("pastor", "deacon"), async (req, res) => {
     try {
       const visitors = await storage.getVisitors();
       res.json(visitors);
@@ -776,7 +776,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/visitors/:id", async (req, res) => {
+  app.get("/api/visitors/:id", requireRole("pastor", "deacon"), async (req, res) => {
     try {
       const visitor = await storage.getVisitor(req.params.id);
       if (!visitor) {
@@ -788,7 +788,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/visitors", async (req, res) => {
+  app.post("/api/visitors", requireRole("deacon"), async (req, res) => {
     try {
       const validated = insertVisitorSchema.parse(req.body);
       const visitor = await storage.createVisitor(validated);
@@ -801,7 +801,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/visitors/:id", async (req, res) => {
+  app.put("/api/visitors/:id", requireRole("deacon"), async (req, res) => {
     try {
       const validated = insertVisitorSchema.partial().parse(req.body);
       const visitor = await storage.updateVisitor(req.params.id, validated);
@@ -819,7 +819,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/visitors/:id", async (req, res) => {
+  app.delete("/api/visitors/:id", requireRole("deacon"), async (req, res) => {
     try {
       const success = await storage.deleteVisitor(req.params.id);
       
@@ -1152,7 +1152,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // DIACONAL HELP ROUTES (Deacon)
   // ============================================
   
-  app.get("/api/diaconal-help", async (req, res) => {
+  app.get("/api/diaconal-help", requireRole("pastor", "deacon"), async (req, res) => {
     try {
       const helps = await storage.getDiaconalHelps();
       res.json(helps);
@@ -1161,7 +1161,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/diaconal-help", async (req, res) => {
+  app.post("/api/diaconal-help", requireRole("deacon"), async (req, res) => {
     try {
       const validated = insertDiaconalHelpSchema.parse(req.body);
       
@@ -1177,7 +1177,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/diaconal-help/:id", async (req, res) => {
+  app.patch("/api/diaconal-help/:id", requireRole("deacon"), async (req, res) => {
     try {
       const validated = insertDiaconalHelpSchema.partial().parse(req.body);
       const help = await storage.updateDiaconalHelp(req.params.id, validated);
@@ -1195,7 +1195,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/diaconal-help/:id", async (req, res) => {
+  app.delete("/api/diaconal-help/:id", requireRole("deacon"), async (req, res) => {
     try {
       const success = await storage.deleteDiaconalHelp(req.params.id);
       
@@ -1213,7 +1213,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // BULLETINS ROUTES (Deacon)
   // ============================================
   
-  app.get("/api/bulletins", async (req, res) => {
+  app.get("/api/bulletins", requireRole("pastor", "deacon"), async (req, res) => {
     try {
       const bulletins = await storage.getBulletins();
       res.json(bulletins);
@@ -1222,7 +1222,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/bulletins/:id", async (req, res) => {
+  app.get("/api/bulletins/:id", requireRole("pastor", "deacon"), async (req, res) => {
     try {
       const bulletin = await storage.getBulletin(req.params.id);
       if (!bulletin) {
@@ -1234,7 +1234,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/bulletins", async (req, res) => {
+  app.post("/api/bulletins", requireRole("deacon"), async (req, res) => {
     try {
       const validated = insertBulletinSchema.parse(req.body);
       const bulletin = await storage.createBulletin(validated);
@@ -1247,7 +1247,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/bulletins/:id", async (req, res) => {
+  app.put("/api/bulletins/:id", requireRole("deacon"), async (req, res) => {
     try {
       const validated = insertBulletinSchema.partial().parse(req.body);
       const bulletin = await storage.updateBulletin(req.params.id, validated);
@@ -1265,7 +1265,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/bulletins/:id", async (req, res) => {
+  app.delete("/api/bulletins/:id", requireRole("deacon"), async (req, res) => {
     try {
       const success = await storage.deleteBulletin(req.params.id);
       
