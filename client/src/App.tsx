@@ -14,6 +14,8 @@ import PastorMembers from "@/pages/pastor/members";
 import PastorUsers from "@/pages/pastor/users";
 import PastorSeminarians from "@/pages/pastor/seminarians";
 import PastorCatechumens from "@/pages/pastor/catechumens";
+import PastorVisitors from "@/pages/pastor/visitors";
+import PastorBirthdays from "@/pages/pastor/birthdays";
 
 // Treasurer Pages
 import TreasurerDashboard from "@/pages/treasurer/dashboard";
@@ -73,7 +75,7 @@ function Router() {
       <Route path="/pastor/visitors">
         {() => (
           <AppLayout role="pastor" userName={mockAuth.userName}>
-            <PlaceholderPage title="Visitantes (Somente Leitura)" />
+            <PastorVisitors />
           </AppLayout>
         )}
       </Route>
@@ -87,7 +89,7 @@ function Router() {
       <Route path="/pastor/birthdays">
         {() => (
           <AppLayout role="pastor" userName={mockAuth.userName}>
-            <PlaceholderPage title="Aniversariantes" />
+            <PastorBirthdays />
           </AppLayout>
         )}
       </Route>
