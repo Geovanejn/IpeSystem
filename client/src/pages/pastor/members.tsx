@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Plus, Search, Edit, Trash2, Eye } from "lucide-react";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,9 @@ import {
   TableRow 
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { queryClient, apiRequest } from "@/lib/queryClient";
+import type { Member } from "@shared/schema";
 import {
   Dialog,
   DialogContent,
@@ -21,50 +25,61 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-const mockMembers = [
-  { 
-    id: "1", 
-    name: "João Silva", 
-    email: "joao@email.com", 
-    phone: "(11) 98765-4321",
-    role: "Presbítero",
-    status: "Ativo",
-    communion: "Comungante"
-  },
-  { 
-    id: "2", 
-    name: "Maria Santos", 
-    email: "maria@email.com", 
-    phone: "(11) 98765-1234",
-    role: "Membro",
-    status: "Ativo",
-    communion: "Comungante"
-  },
-  { 
-    id: "3", 
-    name: "Pedro Oliveira", 
-    email: "pedro@email.com", 
-    phone: "(11) 98765-5678",
-    role: "Diácono",
-    status: "Ativo",
-    communion: "Comungante"
-  },
-];
-
 const statusColors: Record<string, string> = {
-  "Ativo": "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-  "Inativo": "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300",
-  "Transferido": "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
-  "Em Disciplina": "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
+  "ativo": "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+  "inativo": "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300",
+  "transferido": "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
+  "em_disciplina": "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
+};
+
+const communionColors: Record<string, string> = {
+  "comungante": "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
+  "nao_comungante": "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300",
 };
 
 export default function PastorMembers() {
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredMembers = mockMembers.filter(member =>
-    member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    member.email.toLowerCase().includes(searchQuery.toLowerCase())
+  // Buscar membros da API
+  const { data: members = [], isLoading } = useQuery<Member[]>({
+    queryKey: ["/api/members"],
+  });
+
+  // Filtrar membros baseado na busca
+  const filteredMembers = members.filter(member =>
+    member.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    member.email?.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Mutation para deletar membro
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await apiRequest("DELETE", `/api/members/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/members"], refetchType: 'all' });
+      toast({
+        title: "Membro removido",
+        description: "O membro foi removido com sucesso.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Erro ao remover membro",
+        description: "Ocorreu um erro ao remover o membro.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <p className="text-muted-foreground">Carregando membros...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-8 space-y-6">
@@ -72,7 +87,7 @@ export default function PastorMembers() {
         <div>
           <h1 className="text-3xl font-bold text-foreground mb-2">Membros</h1>
           <p className="text-muted-foreground">
-            Gerenciamento completo de membros da IPE
+            Gerenciamento completo de membros da IPE - Total: {members.length}
           </p>
         </div>
         <Dialog>
@@ -125,8 +140,8 @@ export default function PastorMembers() {
                   <TableHead>Email</TableHead>
                   <TableHead>Telefone</TableHead>
                   <TableHead>Cargo</TableHead>
+                  <TableHead>Comunhão</TableHead>
                   <TableHead>Situação</TableHead>
-                  <TableHead>Status</TableHead>
                   <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
               </TableHeader>
@@ -139,18 +154,27 @@ export default function PastorMembers() {
                   </TableRow>
                 ) : (
                   filteredMembers.map((member) => (
-                    <TableRow key={member.id} className="hover:bg-muted/50">
-                      <TableCell className="font-medium">{member.name}</TableCell>
-                      <TableCell>{member.email}</TableCell>
-                      <TableCell>{member.phone}</TableCell>
-                      <TableCell>{member.role}</TableCell>
-                      <TableCell>{member.communion}</TableCell>
+                    <TableRow key={member.id} className="hover:bg-muted/50" data-testid={`row-member-${member.id}`}>
+                      <TableCell className="font-medium" data-testid={`text-name-${member.id}`}>{member.fullName}</TableCell>
+                      <TableCell data-testid={`text-email-${member.id}`}>{member.email || "-"}</TableCell>
+                      <TableCell data-testid={`text-phone-${member.id}`}>{member.primaryPhone || "-"}</TableCell>
+                      <TableCell data-testid={`text-role-${member.id}`}>{member.ecclesiasticalRole}</TableCell>
                       <TableCell>
                         <Badge 
-                          className={statusColors[member.status]}
+                          className={communionColors[member.communionStatus] || ""}
                           variant="secondary"
+                          data-testid={`badge-communion-${member.id}`}
                         >
-                          {member.status}
+                          {member.communionStatus === "comungante" ? "Comungante" : "Não Comungante"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge 
+                          className={statusColors[member.memberStatus] || ""}
+                          variant="secondary"
+                          data-testid={`badge-status-${member.id}`}
+                        >
+                          {member.memberStatus === "ativo" ? "Ativo" : member.memberStatus === "inativo" ? "Inativo" : member.memberStatus === "transferido" ? "Transferido" : "Em Disciplina"}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">
@@ -172,6 +196,8 @@ export default function PastorMembers() {
                           <Button 
                             variant="ghost" 
                             size="icon"
+                            onClick={() => deleteMutation.mutate(member.id)}
+                            disabled={deleteMutation.isPending}
                             data-testid={`button-delete-${member.id}`}
                           >
                             <Trash2 className="h-4 w-4 text-destructive" />
@@ -187,16 +213,8 @@ export default function PastorMembers() {
 
           <div className="flex items-center justify-between mt-4">
             <p className="text-sm text-muted-foreground">
-              Mostrando {filteredMembers.length} de {mockMembers.length} membros
+              Mostrando {filteredMembers.length} de {members.length} membros
             </p>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" disabled>
-                Anterior
-              </Button>
-              <Button variant="outline" size="sm">
-                Próximo
-              </Button>
-            </div>
           </div>
         </CardContent>
       </Card>
