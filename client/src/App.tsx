@@ -22,10 +22,12 @@ import PastorReports from "@/pages/pastor/reports";
 import TreasurerDashboard from "@/pages/treasurer/dashboard";
 import TreasurerTithes from "@/pages/treasurer/tithes";
 import TreasurerOfferings from "@/pages/treasurer/offerings";
+import TreasurerBookstore from "@/pages/treasurer/bookstore";
 
 // Deacon Pages
 import DeaconDashboard from "@/pages/deacon/dashboard";
 import DeaconVisitors from "@/pages/deacon/visitors-crud";
+import DeaconHelp from "@/pages/deacon/help";
 
 // LGPD Pages
 import LGPDDashboard from "@/pages/lgpd/dashboard";
@@ -121,14 +123,14 @@ function Router() {
       <Route path="/treasurer/offerings">
         {() => (
           <AppLayout role="treasurer" userName="Tesoureiro Maria Santos">
-            <PlaceholderPage title="Ofertas" />
+            <TreasurerOfferings />
           </AppLayout>
         )}
       </Route>
       <Route path="/treasurer/bookstore">
         {() => (
           <AppLayout role="treasurer" userName="Tesoureiro Maria Santos">
-            <PlaceholderPage title="Livraria" />
+            <TreasurerBookstore />
           </AppLayout>
         )}
       </Route>
@@ -172,7 +174,7 @@ function Router() {
       <Route path="/deacon/help">
         {() => (
           <AppLayout role="deacon" userName="Diácono Pedro Oliveira">
-            <PlaceholderPage title="Ajuda Diaconal" />
+            <DeaconHelp />
           </AppLayout>
         )}
       </Route>
