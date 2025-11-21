@@ -81,25 +81,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem("sessionId", sessionId);
       localStorage.setItem("user", JSON.stringify(userData));
       setUser(userData);
-
-      // Redirecionar baseado no role
-      switch (userData.role) {
-        case "pastor":
-          setLocation("/pastor");
-          break;
-        case "treasurer":
-          setLocation("/treasurer");
-          break;
-        case "deacon":
-          setLocation("/deacon");
-          break;
-        case "member":
-        case "visitor":
-          setLocation("/lgpd");
-          break;
-        default:
-          setLocation("/");
-      }
     } catch (error) {
       console.error("Login failed:", error);
       throw error;

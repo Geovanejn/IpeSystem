@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -20,7 +21,31 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { login } = useAuth();
+  const { login, user, isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
+
+  // Redirecionar se já está autenticado
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      switch (user.role) {
+        case "pastor":
+          setLocation("/pastor");
+          break;
+        case "treasurer":
+          setLocation("/treasurer");
+          break;
+        case "deacon":
+          setLocation("/deacon");
+          break;
+        case "member":
+        case "visitor":
+          setLocation("/lgpd");
+          break;
+        default:
+          setLocation("/");
+      }
+    }
+  }, [isAuthenticated, user, setLocation]);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -34,10 +59,7 @@ export default function Login() {
     setIsLoading(true);
     try {
       await login(data.username, data.password);
-      toast({
-        title: "Login realizado com sucesso!",
-        description: `Bem-vindo, ${data.username}!`,
-      });
+      // Não precisa fazer nada aqui - o useEffect vai redirecionar
     } catch (error: any) {
       toast({
         title: "Erro ao fazer login",
