@@ -5,6 +5,7 @@ import { createServer as createViteServer, createLogger } from "vite";
 import { type Server } from "http";
 import viteConfig from "../vite.config";
 import { nanoid } from "nanoid";
+import { noCache } from "./middleware/cache.middleware";
 
 const viteLogger = createLogger();
 
@@ -59,6 +60,9 @@ export async function setupVite(app: Express, server: Server) {
         `src="/src/main.tsx?v=${nanoid()}"`,
       );
       const page = await vite.transformIndexHtml(url, template);
+      
+      // Aplicar no-cache para HTML (sempre buscar nova versão)
+      noCache(res);
       res.status(200).set({ "Content-Type": "text/html" }).end(page);
     } catch (e) {
       vite.ssrFixStacktrace(e as Error);
@@ -76,10 +80,37 @@ export function serveStatic(app: Express) {
     );
   }
 
-  app.use(express.static(distPath));
+  // Servir assets estáticos com cache configurado
+  app.use(express.static(distPath, {
+    maxAge: 0,           // Sem cache por padrão (setHeaders vai configurar caso a caso)
+    immutable: false,
+    setHeaders: (res, filePath) => {
+      // Normalizar path para verificações
+      const normalizedPath = filePath.replace(/\\/g, '/');
+      
+      // Todos os arquivos HTML: sempre buscar nova versão
+      if (normalizedPath.endsWith('.html')) {
+        noCache(res);
+      }
+      // Assets do Vite em /assets/ com hash: cache longo (1 ano)
+      // Vite coloca todos os bundles em /assets/ com hash único
+      // Exemplo: /assets/main-abc123.js, /assets/style-xyz789.css
+      else if (normalizedPath.includes('/assets/') && 
+               normalizedPath.match(/[-_][a-f0-9]{8,}\.(js|css|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$/i)) {
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      }
+      // Outros assets: cache curto (1 hora) para permitir updates
+      // Exemplo: favicon.ico, robots.txt, etc
+      else if (normalizedPath.match(/\.(js|css|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot|ico|txt|xml)$/i)) {
+        res.setHeader('Cache-Control', 'public, max-age=3600'); // 1 hora
+      }
+    }
+  }));
 
   // fall through to index.html if the file doesn't exist
   app.use("*", (_req, res) => {
+    // Aplicar no-cache para HTML (sempre buscar nova versão)
+    noCache(res);
     res.sendFile(path.resolve(distPath, "index.html"));
   });
 }

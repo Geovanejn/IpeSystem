@@ -213,9 +213,6 @@ router.delete("/users/:id", requireRole("pastor"), async (req, res) => {
  */
 router.get("/members", requireRole("pastor"), async (req, res) => {
   try {
-    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-    res.setHeader("Pragma", "no-cache");
-    res.setHeader("Expires", "0");
     const members = await storage.getMembers();
     res.json(members);
   } catch (error) {
@@ -467,9 +464,6 @@ router.delete("/seminarians/:id", requireRole("pastor"), async (req, res) => {
  */
 router.get("/catechumens", requireRole("pastor"), async (req, res) => {
   try {
-    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-    res.setHeader("Pragma", "no-cache");
-    res.setHeader("Expires", "0");
     const catechumens = await storage.getCatechumens();
     res.json(catechumens);
   } catch (error) {

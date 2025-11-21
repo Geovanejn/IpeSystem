@@ -2,6 +2,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import cookieParser from "cookie-parser";
 import { registerRoutes } from "./routes/index";
 import { setupVite, serveStatic, log } from "./vite";
+import { cacheHeadersMiddleware } from "./middleware/cache.middleware";
 
 const app = express();
 
@@ -24,6 +25,9 @@ app.use(express.json({
   }
 }));
 app.use(express.urlencoded({ extended: false }));
+
+// Cache headers middleware (aplica headers apropriados para APIs e HTML)
+app.use(cacheHeadersMiddleware);
 
 app.use((req, res, next) => {
   const start = Date.now();
