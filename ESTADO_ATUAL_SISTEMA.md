@@ -53,7 +53,26 @@
 - **758 linhas de código**
 - **Aprovado pelo Architect após 3 ciclos de revisão**
 
-### 5. ✅ Gestão de Dízimos (Painel do Tesoureiro)
+### 5. ✅ Gestão de Catecúmenos (Painel do Pastor)
+**Status:** Completo e Operacional (Implementado em 21/11/2025)
+
+**Funcionalidades:**
+- CRUD completo de catecúmenos em preparação para profissão de fé
+- Campos: nome completo, data início, previsão profissão de fé, etapa, professor, observações
+- 3 Etapas com cores: em_andamento (azul), apto (amarelo), concluído (verde)
+- **Campo Professor bloqueado:** auto-populado com o Pastor (não editável)
+- **Funcionalidade especial:** Ao marcar como "concluído", cria membro automaticamente (TODO nas APIs)
+- Filtro por etapa
+- Busca por nome
+- Formulários com validação Zod + React Hook Form
+- Todos os data-testids para testes
+- Alert informativo sobre criação automática de membro
+- Interface em `/pastor/catechumens`
+- **671 linhas de código**
+- **Aprovado pelo Architect após 3 ciclos de correção**
+- **Correções implementadas:** useEffect para auto-popular professorId, campo disabled, reset com professorId preservado
+
+### 6. ✅ Gestão de Dízimos (Painel do Tesoureiro)
 **Status:** Básico Implementado
 
 **Funcionalidades:**
@@ -62,14 +81,14 @@
 - Vinculação com membros
 - Interface em `/treasurer/tithes`
 
-### 6. ✅ Visitantes (Painel do Diácono)
+### 7. ✅ Visitantes (Painel do Diácono)
 **Status:** Básico Implementado
 
 **Funcionalidades:**
 - Listagem de visitantes
 - Interface em `/deacon/visitors`
 
-### 7. ✅ Dashboards
+### 8. ✅ Dashboards
 **Status:** Básicos Implementados
 
 - Dashboard do Pastor (`/pastor`)
@@ -77,7 +96,7 @@
 - Dashboard do Diácono (`/deacon`)
 - Dashboard LGPD (`/lgpd`)
 
-### 8. ✅ Sistema de Audit Logs
+### 9. ✅ Sistema de Audit Logs
 **Status:** Completo e Funcionando
 
 **Funcionalidades:**
@@ -86,7 +105,7 @@
 - Rastreamento total: quem fez, o quê, quando, dados antes/depois
 - Compliance LGPD
 
-### 9. ✅ Infraestrutura
+### 10. ✅ Infraestrutura
 **Status:** Completo
 
 - Banco de dados PostgreSQL configurado
@@ -100,20 +119,7 @@
 
 ## 📋 PRÓXIMOS MÓDULOS A IMPLEMENTAR
 
-### Prioridade 1: Catecúmenos (Painel do Pastor)
-**Status:** ⏳ Pendente
-
-**Especificações:**
-- CRUD completo de catecúmenos
-- Campos: nome, data início, previsão profissão de fé, etapa, professor, observações
-- 3 Etapas: em andamento → apto → concluído
-- Ao concluir: membro criado automaticamente
-- Professor sempre Pastor (campo bloqueado)
-- Interface seguindo padrão de Seminaristas
-
-**Estimativa:** 1-2 horas (seguindo padrão estabelecido)
-
-### Prioridade 2: Visitantes (Leitura no Painel do Pastor)
+### Prioridade 1: Visitantes (Leitura no Painel do Pastor)
 **Status:** ⏳ Pendente
 
 **Especificações:**
@@ -122,7 +128,7 @@
 - Ver quem convidou
 - Ver igreja de origem
 
-### Prioridade 3: Aniversariantes (Painel do Pastor)
+### Prioridade 2: Aniversariantes (Painel do Pastor)
 **Status:** ⏳ Pendente
 
 **Especificações:**
@@ -131,7 +137,7 @@
 - Aniversários de casamento
 - Exportação para boletim
 
-### Prioridade 4: Relatórios Pastorais
+### Prioridade 3: Relatórios Pastorais
 **Status:** ⏳ Pendente
 
 **Especificações:**
