@@ -40,3 +40,84 @@ The user interface prioritizes the IPE brand identity with a specific color sche
 - **React Query**: Manages server-side state in the frontend.
 - **React Hook Form + Zod**: Handles form validation and schema definition.
 - **Tailwind CSS + shadcn/ui + Radix UI**: Frontend styling and UI component library.
+
+## Test Data & Credentials
+
+O sistema foi populado com dados realistas e completos para teste efetivo de todas as funcionalidades.
+
+### Como Popular o Banco de Dados
+
+Execute o seed para criar todos os dados de teste:
+```bash
+npx tsx server/seed.ts
+```
+
+### Credenciais de Acesso
+
+| Role | Username | Password | Painel |
+|------|----------|----------|--------|
+| 🔵 Pastor | `pastor` | `senha123` | `/pastor` |
+| 🟣 Tesoureiro | `tesoureiro` | `senha123` | `/treasurer` |
+| 🟢 Diácono | `diacono` | `senha123` | `/deacon` |
+| 🟠 Membro | `membro` | `senha123` | `/lgpd` |
+| 🔴 Visitante | `visitante` | `senha123` | `/lgpd` |
+
+### Dados Criados pelo Seed
+
+**Módulo Pastoral (Painel do Pastor):**
+- ✅ 10 membros (pastor, presbítero, diácono, membros regulares)
+- ✅ 3 seminaristas (CPAJ, FTSA, Mackenzie)
+- ✅ 3 catecúmenos em diferentes estágios
+- ✅ 5 visitantes com diversos perfis
+- ✅ 2 boletins completos
+
+**Módulo Financeiro (Painel do Tesoureiro):**
+- ✅ 47 dízimos (3 meses de histórico)
+- ✅ 24 ofertas (geral, missões, obra, social)
+- ✅ 5 vendas da livraria
+- ✅ 2 empréstimos ativos
+- ✅ 27 despesas (contas, salários, parcelas)
+
+**Módulo Diaconal (Painel do Diácono):**
+- ✅ 5 ajudas diaconais (cestas, remédios, aluguel)
+- ✅ 5 visitantes para gestão
+
+**Portal LGPD:**
+- ✅ 15 consentimentos LGPD
+- ✅ 4 solicitações LGPD (pendentes e resolvidas)
+- ✅ Dados completos para exportação
+
+**Sistema:**
+- ✅ 5 usuários (todos os roles)
+- ✅ 6 logs de auditoria
+- ✅ Relacionamentos completos entre entidades
+
+### Cenários de Teste
+
+**Como Pastor (`pastor` / `senha123`):**
+- Visualize e gerencie todos os 10 membros
+- Consulte seminaristas e catecúmenos
+- Acesse visitantes (read-only)
+- Visualize relatórios e estatísticas
+
+**Como Tesoureiro (`tesoureiro` / `senha123`):**
+- Consulte 47 dízimos registrados
+- Visualize ofertas e vendas da livraria
+- Gerencie empréstimos e despesas
+- Gere relatórios financeiros
+
+**Como Diácono (`diacono` / `senha123`):**
+- Gerencie 5 visitantes
+- Registre ajudas diaconais
+- Crie e publique boletins
+
+**Como Membro (`membro` / `senha123`):**
+- Acesse Portal LGPD
+- Visualize seus dados pessoais
+- Exporte dados em PDF
+- Solicite correções
+
+**Como Visitante (`visitante` / `senha123`):**
+- Acesse Portal LGPD
+- Consulte seus dados
+- Gerencie consentimentos
