@@ -1,5 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import rateLimit from "express-rate-limit";
 import { storage } from "./storage";
 import { authenticateUser, createSession, getSession, deleteSession, hashPassword } from "./auth";
 import { z } from "zod";
@@ -20,12 +21,29 @@ import {
   insertAuditLogSchema
 } from "@shared/schema";
 
+// ============================================
+// RATE LIMITING
+// ============================================
+
+// Rate limiter para login: previne ataques de força bruta
+const loginRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 5, // Máximo 5 tentativas por janela
+  message: { 
+    error: "Muitas tentativas de login. Tente novamente em 15 minutos." 
+  },
+  standardHeaders: true, // Retorna RateLimit-* headers
+  legacyHeaders: false, // Desabilita X-RateLimit-* headers
+  skipSuccessfulRequests: false, // Conta todas as requisições, não apenas falhas
+  // Usa keyGenerator padrão que lida corretamente com IPv4 e IPv6
+});
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // ============================================
   // AUTH ROUTES
   // ============================================
   
-  app.post("/api/auth/login", async (req, res) => {
+  app.post("/api/auth/login", loginRateLimiter, async (req, res) => {
     try {
       const { username, password } = req.body;
       
