@@ -128,7 +128,7 @@ export default function TreasurerExpensesPage() {
     defaultValues: {
       category: "outros",
       description: "",
-      amount: undefined,
+      amount: 0,
       date: new Date().toISOString().split("T")[0],
     },
   });
@@ -137,7 +137,7 @@ export default function TreasurerExpensesPage() {
     form.reset({
       category: expense.category as any,
       description: expense.description,
-      amount: expense.amount.toString(),
+      amount: parseFloat(expense.amount.toString()),
       date: expense.date,
     });
     setEditingId(expense.id);

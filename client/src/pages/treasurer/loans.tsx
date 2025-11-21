@@ -136,8 +136,8 @@ export default function TreasurerLoansPage() {
     defaultValues: {
       memberId: "",
       description: "",
-      amount: undefined,
-      interestRate: "0",
+      amount: 0,
+      interestRate: 0,
       dueDate: new Date().toISOString().split("T")[0],
       status: "active",
     },
@@ -147,8 +147,8 @@ export default function TreasurerLoansPage() {
     form.reset({
       memberId: loan.memberId,
       description: loan.description,
-      amount: loan.amount.toString(),
-      interestRate: loan.interestRate.toString(),
+      amount: parseFloat(loan.amount.toString()),
+      interestRate: parseFloat(loan.interestRate.toString()),
       dueDate: loan.dueDate,
       status: loan.status,
     });

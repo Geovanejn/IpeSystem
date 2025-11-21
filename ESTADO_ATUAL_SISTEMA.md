@@ -302,6 +302,25 @@
 - ✅ Integração com sidebar (icon BarChart3)
 - ✅ Todos os data-testids implementados
 
+### 23. ✅ Painel do Diácono - Boletim Dominical (Painel do Diácono)
+**Status:** Completo e Operacional (Implementado em 21/11/2025)
+
+**Funcionalidades:**
+- CRUD completo de boletins dominicais
+- Campos: Número da Edição, Data, Título Devocional, Texto Bíblico, Mensagem Devocional, Avisos dos Departamentos
+- Geração automática de números sequenciais de edição
+- 3 status: Total de Boletins, Publicados, Rascunhos
+- Cards com contadores (coloridos por tipo de status)
+- Tabela responsiva com histórico de boletins (ordenado por data decrescente)
+- React Query + React Hook Form com validação Zod
+- Dialog modal para novo/editar boletim com scroll automático
+- Botão de publicação para mover de rascunho para publicado
+- Interface em `/deacon/bulletin`
+- **520+ linhas de código**
+- ✅ Integração com sidebar (icon Book)
+- ✅ Todos os data-testids implementados
+- ✅ Formulário extenso com múltiplos campos de texto
+
 ### 19. ✅ Painel do Diácono - Ajuda Diaconal (Painel do Diácono)
 **Status:** Completo e Operacional (Implementado em 21/11/2025)
 
@@ -446,10 +465,10 @@
 - **Autenticação:** 100% ✅
 - **Painel do Pastor:** 100% ✅ (8/8 módulos: Membros, Usuários, Seminaristas, Catecúmenos, Visitantes, Aniversariantes, Relatórios, Dashboard)
 - **Painel do Tesoureiro:** 100% ✅ (7/7 módulos: Dashboard, Dízimos, Ofertas, Livraria, Empréstimos, Saídas, Relatórios)
-- **Painel do Diácono:** 67% ✅ (2/3 módulos: Dashboard, Visitantes CRUD, Ajuda Diaconal - falta Boletim)
+- **Painel do Diácono:** 100% ✅ (3/3 módulos: Dashboard, Visitantes CRUD, Ajuda Diaconal, Boletim Dominical)
 - **Portal LGPD:** 5% (dashboard básico)
 - **Testes Automatizados:** 100% (Especificações criadas para Pastor)
-- **Progresso Total:** ~75% 🚀
+- **Progresso Total:** ~80% 🚀 (DOIS PAINÉIS PRINCIPAIS COMPLETOS!)
 
 ---
 

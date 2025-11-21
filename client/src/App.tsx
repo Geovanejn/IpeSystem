@@ -31,6 +31,7 @@ import TreasurerFinancialReports from "@/pages/treasurer/financial-reports";
 import DeaconDashboard from "@/pages/deacon/dashboard";
 import DeaconVisitors from "@/pages/deacon/visitors-crud";
 import DeaconHelp from "@/pages/deacon/help";
+import DeaconBulletin from "@/pages/deacon/bulletin";
 
 // LGPD Pages
 import LGPDDashboard from "@/pages/lgpd/dashboard";
@@ -184,7 +185,7 @@ function Router() {
       <Route path="/deacon/bulletin">
         {() => (
           <AppLayout role="deacon" userName="Diácono Pedro Oliveira">
-            <PlaceholderPage title="Boletim Dominical" />
+            <DeaconBulletin />
           </AppLayout>
         )}
       </Route>
