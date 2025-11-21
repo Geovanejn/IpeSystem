@@ -21,6 +21,7 @@ import PastorReports from "@/pages/pastor/reports";
 // Treasurer Pages
 import TreasurerDashboard from "@/pages/treasurer/dashboard";
 import TreasurerTithes from "@/pages/treasurer/tithes";
+import TreasurerOfferings from "@/pages/treasurer/offerings";
 
 // Deacon Pages
 import DeaconDashboard from "@/pages/deacon/dashboard";
