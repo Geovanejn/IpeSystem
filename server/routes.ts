@@ -1284,7 +1284,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // ============================================
   
   // Consents - GET all
-  app.get("/api/lgpd-consents", async (req, res) => {
+  app.get("/api/lgpd-consents", requireRole("pastor", "treasurer", "deacon"), async (req, res) => {
     try {
       const { memberId, visitorId } = req.query;
       const consents = await storage.getLgpdConsents(
@@ -1312,7 +1312,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Consents - POST create
-  app.post("/api/lgpd-consents", async (req, res) => {
+  app.post("/api/lgpd-consents", requireRole("pastor", "treasurer", "deacon"), async (req, res) => {
     try {
       const validated = insertLgpdConsentSchema.parse(req.body);
       const consent = await storage.createLgpdConsent(validated);
@@ -1326,7 +1326,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Consents - PATCH update multiple
-  app.patch("/api/lgpd-consents", async (req, res) => {
+  app.patch("/api/lgpd-consents", requireRole("pastor", "treasurer", "deacon"), async (req, res) => {
     try {
       const { consents: consentUpdates } = req.body;
       
@@ -1349,7 +1349,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Requests - GET all
-  app.get("/api/lgpd-requests", async (req, res) => {
+  app.get("/api/lgpd-requests", requireRole("pastor", "treasurer", "deacon"), async (req, res) => {
     try {
       const { memberId, visitorId } = req.query;
       const requests = await storage.getLgpdRequests(
@@ -1363,7 +1363,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Requests - POST create
-  app.post("/api/lgpd-requests", async (req, res) => {
+  app.post("/api/lgpd-requests", requireRole("pastor", "treasurer", "deacon"), async (req, res) => {
     try {
       const { type, description, fields } = req.body;
       
@@ -1391,7 +1391,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Requests - PUT update
-  app.put("/api/lgpd-requests/:id", async (req, res) => {
+  app.put("/api/lgpd-requests/:id", requireRole("pastor", "treasurer", "deacon"), async (req, res) => {
     try {
       const validated = insertLgpdRequestSchema.partial().parse(req.body);
       const request = await storage.updateLgpdRequest(req.params.id, validated);
@@ -1410,7 +1410,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // LGPD My Data endpoint - Get user's personal data summary
-  app.get("/api/lgpd/my-data", async (req, res) => {
+  app.get("/api/lgpd/my-data", requireRole("pastor", "treasurer", "deacon"), async (req, res) => {
     try {
       // Validate session and get authenticated user
       const sessionId = req.headers.authorization?.replace("Bearer ", "");
@@ -1525,18 +1525,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Legacy LGPD routes for backward compatibility
-  app.get("/api/lgpd/consents", async (req, res) => {
+  app.get("/api/lgpd/consents", requireRole("pastor", "treasurer", "deacon"), async (req, res) => {
     req.url = "/api/lgpd-consents";
     return res.redirect(301, "/api/lgpd-consents");
   });
 
-  app.get("/api/lgpd/requests", async (req, res) => {
+  app.get("/api/lgpd/requests", requireRole("pastor", "treasurer", "deacon"), async (req, res) => {
     req.url = "/api/lgpd-requests";
     return res.redirect(301, "/api/lgpd-requests");
   });
 
   // LGPD export endpoint (generate PDF/Excel/JSON)
-  app.post("/api/lgpd/export", async (req, res) => {
+  app.post("/api/lgpd/export", requireRole("pastor", "treasurer", "deacon"), async (req, res) => {
     try {
       const { identifier, format } = req.body;
       
