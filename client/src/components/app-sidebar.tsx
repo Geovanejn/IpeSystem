@@ -88,11 +88,13 @@ export function AppSidebar({ role, userName = "Usuário" }: AppSidebarProps) {
     <Sidebar>
       <SidebarHeader className="p-6">
         <div className="flex flex-col items-center gap-4">
-          <img 
-            src={logoUrl} 
-            alt="Logo IPE" 
-            className="w-full max-w-[120px]"
-          />
+          <div className="bg-white rounded-lg p-3">
+            <img 
+              src={logoUrl} 
+              alt="Logo IPE" 
+              className="w-full max-w-[120px]"
+            />
+          </div>
           <Badge className={`${roleColors[role]} text-xs font-medium px-3 py-1`}>
             {roleTitles[role]}
           </Badge>
