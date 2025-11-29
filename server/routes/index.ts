@@ -16,7 +16,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     '/api/auth/login',
     '/api/auth/logout',
     '/api/auth/session',
-    '/api/csrf-token',
+    '/api/auth/csrf-token',
   ];
   
   // Middleware condicional: aplica CSRF apenas em rotas mutativas não isentas

@@ -15,7 +15,7 @@ export async function fetchCsrfToken(): Promise<string> {
       headers["Authorization"] = `Bearer ${sessionId}`;
     }
     
-    const response = await fetch("/api/csrf-token", {
+    const response = await fetch("/api/auth/csrf-token", {
       credentials: "include",
       headers,
     });
