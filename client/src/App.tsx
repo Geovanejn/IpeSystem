@@ -298,7 +298,9 @@ function App() {
         <ThemeProvider defaultTheme="light" storageKey="ipe-theme">
           <TooltipProvider>
             <Toaster />
-            <Router />
+            <Suspense fallback={<PageLoader />}>
+              <Router />
+            </Suspense>
           </TooltipProvider>
         </ThemeProvider>
       </AuthProvider>
